@@ -83,7 +83,7 @@ watch(currentModel, (newVal, oldVal) => {
                   single-line
                   density="compact"
                   type="number"
-                  max="2048"
+                  max="8192"
                   step="1"
                   style="width: 100px"
                   class="flex-grow-0"
@@ -93,7 +93,7 @@ watch(currentModel, (newVal, oldVal) => {
           <v-col cols="12">
             <v-slider
                 v-model="currentModel.max_tokens"
-                :max="2048"
+                :max="8192"
                 :step="1"
                 hide-details
             >
