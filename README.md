@@ -1,14 +1,22 @@
-<p align="center">
-  <img alt="demo" src="./demos/demo.gif?v=1">
-</p>
+<div align="center">
+<h1>ChatGPT UI</h1>
+</div>
 
 [English](./README.md) | [中文](./docs/zh/README.md)
 
-# ChatGPT UI
-
 A ChatGPT web client that supports multiple users, multiple database connections for persistent data storage, supports i18n. Provides Docker images and quick deployment scripts.
 
+https://user-images.githubusercontent.com/46235412/227156264-ca17ab17-999b-414f-ab06-3f75b5235bfe.mp4
+
+
 ## 📢Updates
+<details open>
+<summary><strong>2023-03-23</strong></summary>
+Added web search capability to generate more relevant and up-to-date answers from ChatGPT!
+This feature is off by default, you can turn it on in `Chat->Settings` in the admin panel, there is a record `open_web_search` in Settings, set its value to True.
+
+</details>
+
 <details open>
 <summary><strong>2023-03-15</strong></summary>
 
@@ -115,6 +123,7 @@ services:
     #      - EMAIL_HOST_USER=
     #      - EMAIL_HOST_PASSWORD=
     #      - EMAIL_USE_TLS=True
+    #      - EMAIL_FROM=no-reply@example.com  #Default sender email address
     ports:
       - '8000:8000'
     networks:

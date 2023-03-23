@@ -1,14 +1,21 @@
-<p align="center">
-  <img alt="demo" src="../../demos/demo.gif?v=1">
-</p>
+<div align="center">
+<h1>ChatGPT UI</h1>
+</div>
 
 [English](../../README.md) | [中文](./docs/zh/README.md)
 
-# ChatGPT UI
-
 ChatGPT Web 客户端，支持多用户，支持 Mysql、PostgreSQL 等多种数据库连接进行数据持久化存储，支持多语言。提供 Docker 镜像和快速部署脚本。
 
+https://user-images.githubusercontent.com/46235412/227156264-ca17ab17-999b-414f-ab06-3f75b5235bfe.mp4
+
+
 ## 📢 更新
+<details open>
+<summary><strong>2023-03-23</strong></summary>
+增加网页搜索能力，使得 ChatGPT 生成的回答更与时俱进！
+该功能默认处于关闭状态，你可以在管理后台的 `Chat->Settings` 中开启它，在 Settings 中有一个 `open_web_search` 的记录，把它的值设置为 True。
+</details>
+
 <details open>
 <summary><strong>2023-03-15</strong></summary>
 
@@ -113,6 +120,7 @@ services:
     #      - EMAIL_HOST_USER=
     #      - EMAIL_HOST_PASSWORD=
     #      - EMAIL_USE_TLS=True
+    #      - EMAIL_FROM=no-reply@example.com  #默认发件邮箱地址
     ports:
       - '8000:8000'
     networks:
