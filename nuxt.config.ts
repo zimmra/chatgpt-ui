@@ -12,7 +12,7 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             appName: "PZ's ChatGPT UI",
-            typewriter: true,
+            typewriter: false,
             typewriterDelay: 50,
         }
     },
