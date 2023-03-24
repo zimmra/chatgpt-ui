@@ -14,6 +14,7 @@ export default defineNuxtConfig({
             appName: "PZ's ChatGPT UI",
             typewriter: false,
             typewriterDelay: 50,
+            customApiKey: false
         }
     },
     build: {

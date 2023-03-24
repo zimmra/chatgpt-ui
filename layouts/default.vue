@@ -98,6 +98,15 @@ const signOut = async () => {
   }
 }
 
+const settings = useSettings()
+const showApiKeySetting = ref(false)
+watchEffect(() => {
+  if (settings.value) {
+    const settingsValue = toRaw(settings.value)
+    showApiKeySetting.value = settingsValue.open_api_key_setting && settingsValue.open_api_key_setting === 'True'
+  }
+})
+
 onMounted(async () => {
   loadConversations()
   loadSettings()
@@ -238,6 +247,10 @@ onMounted(async () => {
                 </v-card-actions>
               </v-card>
             </v-dialog>
+
+            <ApiKeyDialog
+                v-if="showApiKeySetting"
+            />
 
             <ModelParameters/>
 
