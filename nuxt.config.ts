@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const appName = process.env.NUXT_PUBLIC_APP_NAME ?? 'ChatGPT UI'
+const appName = process.env.NUXT_PUBLIC_APP_NAME ?? "PZ's ChatGPT-3 UI"
 
 export default defineNuxtConfig({
     dev: false,
@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-            appName: appName,
+            appName: "PZ's ChatGPT UI",
             typewriter: false,
             typewriterDelay: 50,
             customApiKey: false
