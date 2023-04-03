@@ -22,8 +22,8 @@ const setLang = (lang) => {
   setLocale(lang)
 }
 
-const conversations = useConversions()
-const currentConversation = useConversion()
+const conversations = useConversations()
+const currentConversation = useConversation()
 
 const editingConversation = ref(null)
 const deletingConversationIndex = ref(null)
@@ -54,7 +54,7 @@ const deleteConversation = async (index) => {
   deletingConversationIndex.value = null
   if (!error.value) {
     if (conversations.value[index].id === currentConversation.value.id) {
-      createNewConversion()
+      createNewConversation()
     }
     conversations.value.splice(index, 1)
   }
@@ -78,7 +78,7 @@ const loadingConversations = ref(false)
 
 const loadConversations = async () => {
   loadingConversations.value = true
-  conversations.value = await getConversions()
+  conversations.value = await getConversations()
   loadingConversations.value = false
 }
 
@@ -123,19 +123,53 @@ onMounted(async () => {
         :permanent="drawerPermanent"
         width="300"
     >
-      <div class="px-2 py-2">
+      <template
+          v-slot:prepend
+      >
         <v-list>
-          <v-list-item>
-            <v-btn
-                block
-                variant="outlined"
-                prepend-icon="add"
-                @click="createNewConversion()"
-                class="text-none"
-            >
-              {{ $t('newConversation') }}
-            </v-btn>
+          <v-list-item
+              :title="$auth.user.username"
+              :subtitle="$auth.user.email"
+          >
+            <template v-slot:prepend>
+              <v-icon
+                  icon="face"
+                  size="x-large"
+              ></v-icon>
+            </template>
+            <template v-slot:append>
+              <v-menu>
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                      v-bind="props"
+                      size="small"
+                      variant="text"
+                      icon="expand_more"
+                  ></v-btn>
+                </template>
+                <v-list>
+                  <v-list-item
+                      :title="$t('resetPassword')"
+                      to="/account/resetPassword"
+                  >
+                  </v-list-item>
+                  <v-list-item
+                      :title="$t('signOut')"
+                      @click="signOut"
+                  >
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+
+            </template>
           </v-list-item>
+        </v-list>
+
+        <v-divider></v-divider>
+      </template>
+
+      <div class="px-2">
+        <v-list>
           <v-list-item v-show="loadingConversations">
             <v-list-item-title class="d-flex justify-center">
               <v-progress-circular indeterminate></v-progress-circular>
@@ -172,19 +206,19 @@ onMounted(async () => {
               <v-list-item
                   rounded="xl"
                   active-color="primary"
-                  @click="openConversationMessages(conversation)"
+                  :to="conversation.id ? `/${conversation.id}` : undefined"
                   v-bind="props"
               >
-                <v-list-item-title>{{ conversation.topic }}</v-list-item-title>
+                <v-list-item-title>{{ conversation.topic !== "" ? conversation.topic : $t('defaultConversationTitle') }}</v-list-item-title>
                 <template v-slot:append>
                   <div
-                      v-show="isHovering"
+                      v-show="isHovering && conversation.id"
                   >
                     <v-btn
                         icon="edit"
                         size="small"
                         variant="text"
-                        @click.stop="editConversation(cIdx)"
+                        @click.prevent="editConversation(cIdx)"
                     >
                     </v-btn>
                     <v-btn
@@ -192,7 +226,7 @@ onMounted(async () => {
                         size="small"
                         variant="text"
                         :loading="deletingConversationIndex === cIdx"
-                        @click.stop="deleteConversation(cIdx)"
+                        @click.prevent="deleteConversation(cIdx)"
                     >
                     </v-btn>
                   </div>
@@ -286,32 +320,33 @@ onMounted(async () => {
                 @click="feedback"
             ></v-list-item>
 
-            <v-list-item
-                rounded="xl"
-                prepend-icon="logout"
-                :title="$t('signOut')"
-                @click="signOut"
-            ></v-list-item>
-
           </v-list>
         </div>
       </template>
     </v-navigation-drawer>
 
     <v-app-bar
-        class="d-md-none"
+        class=""
     >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>{{ runtimeConfig.public.appName }}</v-toolbar-title>
+      <v-toolbar-title>{{ currentConversation.id ? currentConversation.topic : runtimeConfig.public.appName }}</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
       <v-btn
           :title="$t('newConversation')"
           icon="add"
-          @click="createNewConversion()"
+          @click="createNewConversation"
+          class="d-md-none"
       ></v-btn>
+      <v-btn
+          variant="outlined"
+          class="text-none d-none d-md-block"
+          @click="createNewConversation"
+      >
+        {{ $t('newConversation') }}
+      </v-btn>
 
     </v-app-bar>
 
