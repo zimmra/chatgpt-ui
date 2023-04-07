@@ -1,8 +1,15 @@
+<script setup>
+onNuxtReady(() => {
+  fetchSystemSettings()
+  // api key
+  const apiKey = useApiKey()
+  apiKey.value = getStoredApiKey()
+})
+</script>
+
 <template>
-  <div>
+  <NuxtLayout>
     <NuxtLoadingIndicator />
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-  </div>
+    <NuxtPage />
+  </NuxtLayout>
 </template>

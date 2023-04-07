@@ -1,13 +1,13 @@
 <script setup>
 import {EventStreamContentType, fetchEventSource} from '@microsoft/fetch-event-source'
-import {addConversation} from "../utils/helper";
 
-const { $i18n, $auth } = useNuxtApp()
+const { $i18n } = useNuxtApp()
 const runtimeConfig = useRuntimeConfig()
 const currentModel = useCurrentModel()
 const openaiApiKey = useApiKey()
 const fetchingResponse = ref(false)
 const messageQueue = []
+const frugalMode = ref(true)
 let isProcessingQueue = false
 
 const props = defineProps({
@@ -65,7 +65,8 @@ const fetchReply = async (message) => {
   const data = Object.assign({}, currentModel.value, {
     openaiApiKey: enableCustomApiKey.value ? openaiApiKey.value : null,
     message: message,
-    conversationId: props.conversation.id
+    conversationId: props.conversation.id,
+    frugalMode: frugalMode.value
   }, webSearchParams)
 
   try {
@@ -108,12 +109,12 @@ const fetchReply = async (message) => {
         }
 
         if (event === 'done') {
-          if (props.conversation.id === null) {
+          abortFetch()
+          props.conversation.messages[props.conversation.messages.length - 1].id = data.messageId
+          if (!props.conversation.id) {
             props.conversation.id = data.conversationId
             genTitle(props.conversation.id)
           }
-          props.conversation.messages[props.conversation.messages.length - 1].id = data.messageId
-          abortFetch()
           return;
         }
 
@@ -136,12 +137,6 @@ const scrollChatWindow = () => {
     return;
   }
   grab.value.scrollIntoView({behavior: 'smooth'})
-}
-
-const checkOrAddConversation = () => {
-  if (props.conversation.messages.length === 0) {
-    props.conversation.messages.push({id: null, is_bot: true, message: ''})
-  }
 }
 
 const send = (message) => {
@@ -173,74 +168,80 @@ const deleteMessage = (index) => {
   props.conversation.messages.splice(index, 1)
 }
 
-const showWebSearchToggle = ref(false)
-const enableWebSearch = ref(false)
-const enableCustomApiKey = ref(false)
-
 const settings = useSettings()
+const enableWebSearch = ref(false)
 
-watchEffect(() => {
-  if (settings.value) {
-    const settingsValue = toRaw(settings.value)
-    showWebSearchToggle.value = settingsValue.open_web_search && settingsValue.open_web_search === 'True'
-    enableCustomApiKey.value = settingsValue.open_api_key_setting && settingsValue.open_api_key_setting === 'True'
-  }
+const showWebSearchToggle = computed(() => {
+  return settings.value && settings.value.open_web_search && settings.value.open_web_search === 'True'
+})
+
+const enableCustomApiKey = computed(() => {
+  return settings.value && settings.value.open_api_key_setting && settings.value.open_api_key_setting === 'True'
+})
+
+
+onNuxtReady(() => {
+  currentModel.value = getCurrentModel()
 })
 
 </script>
 
 <template>
-  <div
-      v-if="conversation.loadingMessages"
-      class="text-center"
-  >
-    <v-progress-circular
-        indeterminate
-        color="primary"
-    ></v-progress-circular>
-  </div>
-  <div v-else>
+  <div v-if="conversation">
     <div
-        v-if="conversation.messages.length > 0"
-        ref="chatWindow"
+        v-if="conversation.loadingMessages"
+        class="text-center"
     >
-      <v-container>
-        <v-row>
-          <v-col
-              v-for="(message, index) in conversation.messages" :key="index"
-              cols="12"
-          >
-            <div
-                class="d-flex align-center"
-                :class="message.is_bot ? 'justify-start' : 'justify-end'"
-            >
-              <MessageActions
-                  v-if="!message.is_bot"
-                  :message="message"
-                  :message-index="index"
-                  :use-prompt="usePrompt"
-                  :delete-message="deleteMessage"
-              />
-              <MsgContent :message="message" />
-              <MessageActions
-                  v-if="message.is_bot"
-                  :message="message"
-                  :message-index="index"
-                  :use-prompt="usePrompt"
-                  :delete-message="deleteMessage"
-              />
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
-
-      <div ref="grab" class="w-100" style="height: 200px;"></div>
+      <v-progress-circular
+          indeterminate
+          color="primary"
+      ></v-progress-circular>
     </div>
-    <Welcome v-if="conversation.id === null && conversation.messages.length === 0" />
+    <div v-else>
+      <div
+          v-if="conversation.messages"
+          ref="chatWindow"
+      >
+        <v-container>
+          <v-row>
+            <v-col
+                v-for="(message, index) in conversation.messages" :key="index"
+                cols="12"
+            >
+              <div
+                  class="d-flex align-center"
+                  :class="message.is_bot ? 'justify-start' : 'justify-end'"
+              >
+                <MessageActions
+                    v-if="!message.is_bot"
+                    :message="message"
+                    :message-index="index"
+                    :use-prompt="usePrompt"
+                    :delete-message="deleteMessage"
+                />
+                <MsgContent :message="message" />
+                <MessageActions
+                    v-if="message.is_bot"
+                    :message="message"
+                    :message-index="index"
+                    :use-prompt="usePrompt"
+                    :delete-message="deleteMessage"
+                />
+              </div>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <div ref="grab" class="w-100" style="height: 200px;"></div>
+      </div>
+    </div>
   </div>
 
 
-  <v-footer app>
+  <v-footer
+      app
+      class="footer"
+  >
     <div class="px-md-16 w-100 d-flex flex-column">
       <div class="d-flex align-center">
         <v-btn
@@ -260,11 +261,42 @@ watchEffect(() => {
         <v-switch
             v-if="showWebSearchToggle"
             v-model="enableWebSearch"
+            inline
             hide-details
             color="primary"
             :label="$t('webSearch')"
         ></v-switch>
         <v-spacer></v-spacer>
+        <v-switch
+            v-model="frugalMode"
+            inline
+            hide-details
+            color="primary"
+            :label="$t('frugalMode')"
+        ></v-switch>
+        <v-dialog
+            transition="dialog-bottom-transition"
+            width="auto"
+        >
+          <template v-slot:activator="{ props }">
+            <v-icon
+                color="grey"
+                v-bind="props"
+                icon="help_outline"
+            ></v-icon>
+          </template>
+          <template v-slot:default="{ isActive }">
+            <v-card>
+              <v-toolbar
+                  color="primary"
+                  :title="$t('frugalMode')"
+              ></v-toolbar>
+              <v-card-text>
+                {{ $t('frugalModeTip') }}
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-dialog>
       </v-toolbar>
     </div>
   </v-footer>
@@ -287,3 +319,9 @@ watchEffect(() => {
   </v-snackbar>
 
 </template>
+
+<style scoped>
+  .footer {
+    width: 100%;
+  }
+</style>

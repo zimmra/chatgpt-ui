@@ -3,7 +3,7 @@ export const getDefaultConversationData = () => {
     const { $i18n } = useNuxtApp()
     return {
         id: null,
-        topic: $i18n.t('defaultConversationTitle'),
+        topic: null,
         messages: [],
         loadingMessages: false,
     }
@@ -16,11 +16,6 @@ export const getConversations = async () => {
     }
     return []
 }
-
-export const createNewConversation = () => {
-    navigateTo('/')
-}
-
 
 export const addConversation = (conversation) => {
     const conversations = useConversations()
@@ -58,12 +53,27 @@ const transformData = (list) => {
     return result;
 }
 
-export const loadSettings = async () => {
-    const settings = useSettings()
+export const fetchSystemSettings = async () => {
     const { data, error } = await useAuthFetch('/api/chat/settings/', {
-        method: 'GET'
+        method: 'GET',
     })
     if (!error.value) {
+        const settings = useSettings()
         settings.value = transformData(data.value)
     }
+}
+
+export const fetchUser = async () => {
+    return useMyFetch('/api/account/user/')
+}
+
+export const setUser = (userData) => {
+    const user = useUser()
+    user.value = userData
+}
+
+export const logout = () => {
+    const user = useUser()
+    user.value = null
+    return navigateTo('/account/signin');
 }

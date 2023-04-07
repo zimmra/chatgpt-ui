@@ -2,8 +2,8 @@
 const appName = process.env.NUXT_PUBLIC_APP_NAME || "PZ's ChatGPT UI"
 
 export default defineNuxtConfig({
-    dev: false,
-    ssr: false,
+    debug: process.env.NODE_ENV !== 'production',
+    ssr: true,
     app: {
         head: {
             title: appName,
@@ -28,7 +28,7 @@ export default defineNuxtConfig({
     modules: [
         '@kevinmarrec/nuxt-pwa',
         '@nuxtjs/color-mode',
-        '@nuxtjs/i18n',
+        '@nuxtjs/i18n'
     ],
     pwa: {
         manifest: {
@@ -68,15 +68,5 @@ export default defineNuxtConfig({
         vueI18n: {
             fallbackLocale: 'en',
         },
-    },
-    nitro: {
-        devProxy: {
-            "/api": {
-                target: process.env.NUXT_DEV_SERVER ?? 'http://localhost:8000/api',
-                prependPath: true,
-                changeOrigin: true,
-            }
-
-        }
-    },
+    }
 })
