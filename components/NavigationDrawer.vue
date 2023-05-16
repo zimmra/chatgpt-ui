@@ -20,7 +20,7 @@ const setTheme = (theme) => {
   colorMode.preference = theme
 }
 const feedback = () => {
-  window.open('https://github.com/WongSaang/chatgpt-ui/issues', '_blank')
+  window.open('https://github.com/Jarvis73/chatgpt-ui/issues', '_blank')
 }
 
 const { locale, locales, setLocale } = useI18n()
