@@ -105,7 +105,7 @@ onMounted(() => {
 }
 .hljs-code-container {
   border-radius: 3px;
-  overflow: hidden;
+  overflow: auto;
 }
 .hljs-copy-button{
   width:2rem;height:2rem;text-indent:-9999px;color:#fff;
