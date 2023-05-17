@@ -26,8 +26,16 @@ const hint = computed(() => {
 })
 
 watchEffect(() => {
+  function getchar(text)
+  {
+    let cn = text.match(/[\u2E80-\uFE4F\u3002\uff1b\uff0c\uff1a\u201c\u201d\uff08\uff09\u3001\uff1f\u300a\u300b]/ig);
+    let cn_count = cn?cn.length:0
+    let other_count = text.length - cn_count;
+    return cn_count + other_count / 2
+  }
+  const chars = getchar(message.value)
   const lines = message.value.split(/\r\n|\r|\n/).length
-  if (lines > 8) {
+  if (lines > 7 || chars >300) {
     rows.value = 8
     autoGrow.value = false
   } else {
