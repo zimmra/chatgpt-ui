@@ -81,6 +81,17 @@ const enterOnly = (event) => {
   }
 }
 
+const controlEnter = (event) => {
+  event.preventDefault();
+  const textarea = event.target;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
+  message.value = `${value.substring(0, start)}\n${value.substring(end)}`;
+  textarea.selectionStart = start + 1;
+  textarea.selectionEnd = start + 1;
+}
+
 defineExpose({
   usePrompt
 })
@@ -104,6 +115,7 @@ defineExpose({
         clearable
         variant="outlined"
         @keydown.enter.exact="enterOnly"
+        @keydown.enter.ctrl.exact="controlEnter"
     ></v-textarea>
     <v-btn
         :disabled="loading"

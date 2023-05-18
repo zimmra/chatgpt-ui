@@ -77,6 +77,8 @@ onMounted(() => {
   font-size: 0.875rem !important;
   font-weight: 400;
   line-height: 1.25rem;
+  /* 气泡底部不要出现空白行, 抵消 p 的 1rem */
+  margin-bottom: -1rem;
 }
 .chat-msg-content p,
 .chat-msg-content table,
