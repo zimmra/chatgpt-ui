@@ -32,6 +32,8 @@
   "titlePrompt": "Title",
   "addNewPrompt": "Add a new prompt",
   "pressEnterToSendYourMessageOrShiftEnterToAddANewLine": "Press Enter to send your message or Shift+Enter to add a new line",
+  "confirmDeleteAllConversations": "Are you sure you want to delete all conversations?",
+  "confirmDeleteAllConversationsDetails": "This will be a permanent deletion and cannot be retrieved once deleted. Please proceed with caution.",
   "lightMode": "Light Mode",
   "darkMode": "Dark Mode",
   "followSystem": "Follow system",
@@ -71,6 +73,7 @@
   "maxTokenTips2": "token, which includes the length of the prompt and the length of the generated text. The `Max Tokens` here refers to the length of the generated text. Therefore, you should leave some space for your prompt and not set it too large or to the maximum.",
   "frugalMode": "Frugal mode",
   "frugalModeTip": "Activate frugal mode, the client will not send historical messages to ChatGPT, which can save token consumption. If you want ChatGPT to understand the context of the conversation, please turn off frugal mode.",
+  "settingDraw": "Settings",
   "welcomeScreen": {
     "introduction1": "is an unofficial client for ChatGPT, but uses the official OpenAI API.",
     "introduction2": "You will need an OpenAI API Key before you can use this client.",

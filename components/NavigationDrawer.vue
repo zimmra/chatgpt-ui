@@ -1,11 +1,11 @@
 <script setup>
 import { useDisplay } from 'vuetify'
-import {useDrawer} from "../composables/states";
+import { useDrawer } from "../composables/states";
 
 const route = useRoute()
 const { $i18n, $settings } = useNuxtApp()
 const colorMode = useColorMode()
-const {mdAndUp} = useDisplay()
+const { mdAndUp } = useDisplay()
 const drawerPermanent = computed(() => {
   return mdAndUp.value
 })
@@ -14,7 +14,7 @@ const user = useUser()
 const themes = ref([
   { title: $i18n.t('lightMode'), value: 'light' },
   { title: $i18n.t('darkMode'), value: 'dark' },
-  { title: $i18n.t('followSystem'), value: 'system'}
+  { title: $i18n.t('followSystem'), value: 'system' }
 ])
 const setTheme = (theme) => {
   colorMode.preference = theme
@@ -106,46 +106,22 @@ const drawer = useDrawer()
 </script>
 
 <template>
-  <v-navigation-drawer
-      v-model="drawer"
-      :permanent="drawerPermanent"
-      width="300"
-  >
-    <template
-        v-slot:prepend
-        v-if="user"
-    >
+  <v-navigation-drawer v-model="drawer" :permanent="drawerPermanent" width="300">
+    <template v-slot:prepend v-if="user">
       <v-list>
-        <v-list-item
-            :title="user.username"
-            :subtitle="user.email"
-        >
+        <v-list-item :title="user.username" :subtitle="user.email">
           <template v-slot:prepend>
-            <v-icon
-                icon="face"
-                size="x-large"
-            ></v-icon>
+            <v-icon icon="face" size="x-large"></v-icon>
           </template>
           <template v-slot:append>
             <v-menu>
               <template v-slot:activator="{ props }">
-                <v-btn
-                    v-bind="props"
-                    size="small"
-                    variant="text"
-                    icon="expand_more"
-                ></v-btn>
+                <v-btn v-bind="props" size="small" variant="text" icon="expand_more"></v-btn>
               </template>
               <v-list>
-                <v-list-item
-                    :title="$t('resetPassword')"
-                    to="/account/resetPassword"
-                >
+                <v-list-item :title="$t('resetPassword')" to="/account/resetPassword">
                 </v-list-item>
-                <v-list-item
-                    :title="$t('signOut')"
-                    @click="signOut"
-                >
+                <v-list-item :title="$t('signOut')" @click="signOut">
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -167,56 +143,25 @@ const drawer = useDrawer()
       </v-list>
 
       <v-list>
-        <template
-            v-for="(conversation, cIdx) in conversations"
-            :key="conversation.id"
-        >
-          <v-list-item
-              active-color="primary"
-              rounded="xl"
-              v-if="editingConversation && editingConversation.id === conversation.id"
-          >
-            <v-text-field
-                v-model="editingConversation.topic"
-                :loading="editingConversation.updating"
-                variant="underlined"
-                append-icon="done"
-                hide-details
-                density="compact"
-                autofocus
-                @keyup.enter="updateConversation(cIdx)"
-                @click:append="updateConversation(cIdx)"
-            ></v-text-field>
+        <template v-for="(conversation, cIdx) in conversations" :key="conversation.id">
+          <v-list-item active-color="primary" rounded="xl"
+            v-if="editingConversation && editingConversation.id === conversation.id">
+            <v-text-field v-model="editingConversation.topic" :loading="editingConversation.updating" variant="underlined"
+              append-icon="done" hide-details density="compact" autofocus @keyup.enter="updateConversation(cIdx)"
+              @click:append="updateConversation(cIdx)"></v-text-field>
           </v-list-item>
-          <v-hover
-              v-if="!editingConversation || editingConversation.id !== conversation.id"
-              v-slot="{ isHovering, props }"
-          >
-            <v-list-item
-                rounded="xl"
-                active-color="primary"
-                :to="conversation.id ? `/${conversation.id}` : '/'"
-                v-bind="props"
-            >
-              <v-list-item-title>{{ (conversation.topic && conversation.topic !== '') ? conversation.topic : $t('defaultConversationTitle') }}</v-list-item-title>
+          <v-hover v-if="!editingConversation || editingConversation.id !== conversation.id"
+            v-slot="{ isHovering, props }">
+            <v-list-item rounded="xl" active-color="primary" :to="conversation.id ? `/${conversation.id}` : '/'"
+              v-bind="props">
+              <v-list-item-title>{{ (conversation.topic && conversation.topic !== '') ? conversation.topic :
+                $t('defaultConversationTitle') }}</v-list-item-title>
               <template v-slot:append>
-                <div
-                    v-show="isHovering && conversation.id"
-                >
-                  <v-btn
-                      icon="edit"
-                      size="small"
-                      variant="text"
-                      @click.prevent="editConversation(cIdx)"
-                  >
+                <div v-show="isHovering && conversation.id">
+                  <v-btn icon="edit" size="small" variant="text" @click.prevent="editConversation(cIdx)">
                   </v-btn>
-                  <v-btn
-                      icon="delete"
-                      size="small"
-                      variant="text"
-                      :loading="deletingConversationIndex === cIdx"
-                      @click.prevent="deleteConversation(cIdx)"
-                  >
+                  <v-btn icon="delete" size="small" variant="text" :loading="deletingConversationIndex === cIdx"
+                    @click.prevent="deleteConversation(cIdx)">
                   </v-btn>
                 </div>
               </template>
@@ -227,102 +172,71 @@ const drawer = useDrawer()
     </div>
 
     <template v-slot:append>
-      <div class="px-1">
-        <v-divider></v-divider>
-        <v-list>
+      <v-expansion-panels style="flex-direction: column;">
+        <v-expansion-panel rounded="rounded-pill">
+          <v-expansion-panel-title expand-icon="add" collapse-icon="close">
+            <v-icon icon="settings" class="mr-4"></v-icon> {{ $t("settingDraw") }}
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <div class="px-1">
+              <v-divider></v-divider>
+              <v-list density="compact">
 
-          <v-dialog
-              v-model="clearConfirmDialog"
-              persistent
-          >
-            <template v-slot:activator="{ props }">
-              <v-list-item
-                  v-bind="props"
-                  rounded="xl"
-                  prepend-icon="delete_forever"
-                  :title="$t('clearConversations')"
-              ></v-list-item>
-            </template>
-            <v-card>
-              <v-card-title class="text-h5">
-                Are you sure you want to delete all conversations?
-              </v-card-title>
-              <v-card-text>This will be a permanent deletion and cannot be retrieved once deleted. Please proceed with caution.</v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                    color="green-darken-1"
-                    variant="text"
-                    @click="clearConfirmDialog = false"
-                    class="text-none"
-                >
-                  Cancel deletion
-                </v-btn>
-                <v-btn
-                    color="green-darken-1"
-                    variant="text"
-                    @click="clearConversations"
-                    class="text-none"
-                    :loading="deletingConversations"
-                >
-                  Confirm deletion
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+                <v-dialog v-model="clearConfirmDialog" persistent>
+                  <template v-slot:activator="{ props }">
+                    <v-list-item v-bind="props" rounded="xl" prepend-icon="delete_forever"
+                      :title="$t('clearConversations')"></v-list-item>
+                  </template>
+                  <v-card>
+                    <v-card-title class="text-h5">
+                      {{ $i18n.t('confirmDeleteAllConversations') }}
+                    </v-card-title>
+                    <v-card-text>
+                      {{ $i18n.t('confirmDeleteAllConversationsDetails') }}
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="green-darken-1" variant="text" @click="clearConfirmDialog = false" class="text-none">
+                        {{ $i18n.t('Cancel deletion') }}
+                      </v-btn>
+                      <v-btn color="green-darken-1" variant="text" @click="clearConversations" class="text-none"
+                        :loading="deletingConversations">
+                        {{ $i18n.t('Confirm deletion') }}
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
 
-          <ApiKeyDialog
-              v-if="$settings.open_api_key_setting === 'True'"
-          />
+                <ApiKeyDialog v-if="$settings.open_api_key_setting === 'True'" />
 
-          <ModelParameters/>
+                <ModelParameters />
 
-          <v-menu
-          >
-            <template v-slot:activator="{ props }">
-              <v-list-item
-                  v-bind="props"
-                  rounded="xl"
-                  :title="$t('themeMode')"
-              >
-                <template
-                    v-slot:prepend
-                >
-                  <v-icon
-                      v-show="$colorMode.value === 'light'"
-                      icon="light_mode"
-                  ></v-icon>
-                  <v-icon
-                      v-show="$colorMode.value !== 'light'"
-                      icon="dark_mode"
-                  ></v-icon>
-                </template>
-              </v-list-item>
-            </template>
-            <v-list
-                bg-color="white"
-            >
-              <v-list-item
-                  v-for="(theme, idx) in themes"
-                  :key="idx"
-                  @click="setTheme(theme.value)"
-              >
-                <v-list-item-title>{{ theme.title }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+                <v-menu>
+                  <template v-slot:activator="{ props }">
+                    <v-list-item v-bind="props" rounded="xl" :title="$t('themeMode')">
+                      <template v-slot:prepend>
+                        <v-icon v-show="$colorMode.value === 'light'" icon="light_mode"></v-icon>
+                        <v-icon v-show="$colorMode.value !== 'light'" icon="dark_mode"></v-icon>
+                      </template>
+                    </v-list-item>
+                  </template>
+                  <v-list bg-color="white">
+                    <v-list-item v-for="(theme, idx) in themes" :key="idx" @click="setTheme(theme.value)">
+                      <v-list-item-title>{{ theme.title }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
 
-          <SettingsLanguages/>
+                <SettingsLanguages />
 
-          <v-list-item
-              rounded="xl"
-              prepend-icon="help_outline"
-              :title="$t('feedback')"
-              @click="feedback"
-          ></v-list-item>
+                <v-list-item rounded="xl" prepend-icon="help_outline" :title="$t('feedback')"
+                  @click="feedback"></v-list-item>
 
-        </v-list>
-      </div>
+              </v-list>
+            </div>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </template>
   </v-navigation-drawer>
 </template>
@@ -331,9 +245,11 @@ const drawer = useDrawer()
 .v-navigation-drawer__content::-webkit-scrollbar {
   width: 0;
 }
+
 .v-navigation-drawer__content:hover::-webkit-scrollbar {
   width: 6px;
 }
+
 .v-navigation-drawer__content:hover::-webkit-scrollbar-thumb {
   background-color: #999;
   border-radius: 3px;
