@@ -34,8 +34,9 @@ watchEffect(() => {
     return cn_count + other_count / 2
   }
   const chars = getchar(message.value)
+  //const chars = getchar(message.value)*window.devicePixelRatio
   const lines = message.value.split(/\r\n|\r|\n/).length
-  if (lines > 7 || chars >300) {
+  if (lines > 7 || chars >200) {
     rows.value = 8
     autoGrow.value = false
   } else {
