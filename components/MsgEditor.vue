@@ -79,6 +79,16 @@ const enterOnly = (event) => {
       // 当前没有正在进行输入法组合输入
     }
   }
+  else {
+    // 手机上回车只做换行操作
+    const textarea = event.target;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const value = textarea.value;
+    message.value = `${value.substring(0, start)}\n${value.substring(end)}`;
+    textarea.selectionStart = start + 1;
+    textarea.selectionEnd = start + 1;
+  }
 }
 
 const controlEnter = (event) => {
