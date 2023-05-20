@@ -21,6 +21,7 @@ const loadConversation = async () => {
 const loadMessage = async () => {
   const { data, error } = await useAuthFetch('/api/chat/messages/?conversationId=' + route.params.id)
   if (!error.value) {
+    conversation.value.id = route.params.id
     conversation.value.messages = data.value
   }
 }
