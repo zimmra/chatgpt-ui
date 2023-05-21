@@ -34,7 +34,6 @@ const hint = computed(() => {
 // });
 let initialHeight;
 let heightPerLine;
-
 onMounted(async () => {
   // 获取文本框的 DOM 元素
   const textAreaElement = textArea.value.$el.getElementsByTagName('textarea')[0];
@@ -58,7 +57,6 @@ onMounted(async () => {
 
 watch(message,() => {
   const textAreaElement = textArea.value.$el.getElementsByTagName('textarea')[0];
-
   // 获取文本框的实时高度
   const textAreaHeight = textAreaElement.scrollHeight;
   // 输出高度到 console
@@ -66,11 +64,30 @@ watch(message,() => {
   // 计算行数
   // 减去初始高度，然后除以每行的高度增量，最后加1得到行数
   const currentLines = (textAreaHeight - initialHeight) / heightPerLine + 1
+  function getchar(text)
+  {
+    let cn = text.match(/[\u2E80-\uFE4F\u3002\uff1b\uff0c\uff1a\u201c\u201d\uff08\uff09\u3001\uff1f\u300a\u300b]/ig);
+    let cn_count = cn?cn.length:0
+    let other_count = text.length - cn_count;
+    return cn_count + other_count / 2
+  }
+  const chars = getchar(message.value)
+  let shortflag = false
+  //const chars = getchar(message.value)*window.devicePixelRatio
+  const lines = message.value.split(/\r\n|\r|\n/).length
+  if (lines <= 7 && chars <=200){
+    shortflag = true
+  }
+
   // console.log('current lines', currentLines);
-  if (currentLines>=8) {
+  if (currentLines>=8 ) {
     rows.value = 8
     autoGrow.value = false
   } else {
+    rows.value = 1
+    autoGrow.value = true
+  }
+  if (rows.value === 8 && shortflag) {
     rows.value = 1
     autoGrow.value = true
   }
