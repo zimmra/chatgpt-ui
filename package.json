@@ -10,6 +10,7 @@
     "docs:build": "vuepress build docs"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^6.4.0",
     "@kevinmarrec/nuxt-pwa": "^0.17.0",
     "@nuxt/devtools": "^0.4.0",
     "@nuxtjs/color-mode": "^3.2.0",
@@ -27,6 +28,8 @@
     "markdown-it": "^13.0.1",
     "markdown-it-mathjax3": "^4.3.2",
     "nanoid": "^4.0.1",
+    "vue-awesome": "^4.5.0",
+    "vue3-emoji-picker": "^1.1.7",
     "vuetify": "^3.0.6",
     "yarn": "^1.22.19"
   },

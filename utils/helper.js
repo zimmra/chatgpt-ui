@@ -9,6 +9,10 @@ export const getDefaultConversationData = () => {
     }
 }
 
+export const getDefaultFewShotMessages = () => {
+    return []
+}
+
 export const getConversations = async () => {
     const { data, error } = await useAuthFetch('/api/chat/conversations/')
     if (!error.value) {

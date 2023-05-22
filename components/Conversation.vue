@@ -9,13 +9,20 @@ const fetchingResponse = ref(false)
 const messageQueue = []
 const frugalMode = ref(false)
 let isProcessingQueue = false
+const grab = ref(null)
 
 const props = defineProps({
-  conversation: {
-    type: Object,
-    required: true
-  }
+  conversation: { type: Object, required: true },
+  openMaskStore: { type: Function, required: true },
+  conversationPanel: { type: Boolean, required: true },
+  maskTitle: { type: Array, required: true },
+  // maskAvatar: { type: String, required: true },
+  fewShotMessages: { type: Array, required: true },
+  showButtonGroup: { type: Array, required: true }
 })
+const emit = defineEmits([
+  'updateAvatar', 'resetTitle'
+])
 
 const processMessageQueue = () => {
   if (isProcessingQueue || messageQueue.length === 0) {
@@ -61,14 +68,13 @@ const fetchReply = async (message) => {
       default_prompt: $i18n.t('webSearchDefaultPrompt')
     }
   }
-
   const data = Object.assign({}, currentModel.value, {
     openaiApiKey: $settings.open_api_key_setting === 'True' ? openaiApiKey.value : null,
     message: message,
+    fewShotMask: props.fewShotMessages,
     conversationId: props.conversation.id,
     frugalMode: frugalMode.value
   }, webSearchParams)
-
   try {
     await fetchEventSource('/api/conversation/', {
       signal: ctrl.signal,
@@ -137,7 +143,6 @@ const fetchReply = async (message) => {
   }
 }
 
-const grab = ref(null)
 const scrollChatWindow = () => {
   if (grab.value === null) {
     return;
@@ -176,6 +181,13 @@ const deleteMessage = (index) => {
 
 const enableWebSearch = ref(false)
 
+const updateAvatar = (data) => {
+  emit('updateAvatar', data)
+}
+
+const resetTitle = () => {
+  emit('resetTitle')
+}
 
 onNuxtReady(() => {
   currentModel.value = getCurrentModel()
@@ -184,6 +196,7 @@ onNuxtReady(() => {
 </script>
 
 <template>
+  <div v-show="props.conversationPanel">
   <div v-if="conversation">
     <div
         v-if="conversation.loadingMessages"
@@ -233,28 +246,31 @@ onNuxtReady(() => {
       </div>
     </div>
   </div>
+  </div>
 
 
-  <v-footer
-      app
-      class="footer"
-  >
+  <v-footer app v-show="props.conversationPanel">
     <div class="px-md-16 w-100 d-flex flex-column">
-      <div class="d-flex align-center">
-        <v-btn
-            v-show="fetchingResponse"
-            icon="close"
-            title="stop"
-            class="mr-3"
-            @click="stop"
-        ></v-btn>
-        <MsgEditor ref="editor" :send-message="send" :disabled="fetchingResponse" :loading="fetchingResponse" />
-      </div>
       <v-toolbar
           density="comfortable"
           color="transparent"
       >
         <Prompt v-show="!fetchingResponse" :use-prompt="usePrompt" />
+        <FewShotMask 
+          v-show="!fetchingResponse" 
+          :mask-title="maskTitle"
+          :few-shot-messages="fewShotMessages" 
+          :show-button-group="showButtonGroup"
+          @update-avatar="updateAvatar"
+          @reset-title="resetTitle"
+        />
+        <v-btn icon @click="openMaskStore()" v-show="!fetchingResponse" :title="$t('cosplayStore')">
+          <v-icon 
+            icon="fa:fa-solid fa-store" 
+            size="20" 
+            style="padding-bottom: 2px;"
+          />
+        </v-btn>
         <v-switch
             v-if="$settings.open_web_search === 'True'"
             v-model="enableWebSearch"
@@ -302,6 +318,17 @@ onNuxtReady(() => {
         </div>
 
       </v-toolbar>
+      <div class="d-flex align-center">
+        <v-btn
+            v-show="fetchingResponse"
+            icon="close"
+            title="stop"
+            class="mr-3"
+            @click="stop"
+        ></v-btn>
+        <MsgEditor ref="editor" :send-message="send" :disabled="fetchingResponse" :loading="fetchingResponse" />
+      </div>
+
     </div>
   </v-footer>
   <v-snackbar
@@ -317,15 +344,19 @@ onNuxtReady(() => {
           variant="text"
           @click="snackbar = false"
       >
-        Close
+        {{ $t('close') }}
       </v-btn>
     </template>
   </v-snackbar>
-
 </template>
 
 <style scoped>
-  .footer {
-    width: 100%;
-  }
+.container {
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
 </style>
