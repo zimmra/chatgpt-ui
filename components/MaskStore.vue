@@ -183,20 +183,20 @@ onNuxtReady( () => {
         class="card-size card-custom"
       >
         <v-card-title>
-          <span class="headline">{{ $t('viewCosplay') }}</span>
+          <span class="headline" :class="pfs.l">{{ $t('viewCosplay') }}</span>
         </v-card-title>
 
         <v-divider></v-divider>
 
         <v-list class="list-max-height">
           <div class="pt-3 ml-1 mask-title-custom pd-custom">
-            <h3 style="margin: 0 20px 20px 0;">{{ $t('maskTitle') }}</h3>
+            <h3 style="margin: 0 10px 20px 0;" :class="pfs.n">{{ $t('maskTitle') }}</h3>
             <v-btn 
               icon 
               variant="outlined"
               class="avatar-btn"
             >
-              <v-icon style="margin-bottom: 5px;">{{ fewShotMasks[viewMaskIndex].avatar }}</v-icon>
+              <v-icon style="margin-bottom: 5px;" :class="pfs.l">{{ fewShotMasks[viewMaskIndex].avatar }}</v-icon>
             </v-btn>
             <v-text-field
               v-model="fewShotMasks[viewMaskIndex].title"
