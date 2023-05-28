@@ -190,7 +190,11 @@ onNuxtReady( () => {
 
         <v-list class="list-max-height">
           <div class="pt-3 ml-1 mask-title-custom pd-custom">
+<<<<<<< HEAD
             <h3 style="margin: 0 10px 20px 0;" :class="pfs.n">{{ $t('maskTitle') }}</h3>
+=======
+            <h3 style="margin: 0 20px 20px 0;">{{ $t('maskTitle') }}</h3>
+>>>>>>> zjw/feat/layout
             <v-btn 
               icon 
               variant="outlined"

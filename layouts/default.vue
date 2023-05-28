@@ -7,4 +7,8 @@
       <slot />
     </v-app>
   </ColorScheme>
+<<<<<<< HEAD
 </template>
+=======
+</template>
+>>>>>>> zjw/feat/layout

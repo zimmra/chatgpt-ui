@@ -2,6 +2,7 @@
 import { mergeProps } from 'vue';
 import {EventStreamContentType, fetchEventSource} from '@microsoft/fetch-event-source'
 
+const { isMobile } = useDevice();
 const { $i18n, $settings } = useNuxtApp()
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
@@ -18,7 +19,6 @@ const props = defineProps({
   openMaskStore: { type: Function, required: true },
   conversationPanel: { type: Boolean, required: true },
   maskTitle: { type: Array, required: true },
-  // maskAvatar: { type: String, required: true },
   fewShotMessages: { type: Array, required: true },
   showButtonGroup: { type: Array, required: true }
 })
@@ -224,27 +224,22 @@ onNuxtReady(() => {
                   class="d-flex align-center"
                   :class="message.is_bot ? 'justify-start' : 'justify-end'"
               >
-                <MessageActions
-                    v-if="!message.is_bot"
+                <MsgContent
                     :message="message"
                     :message-index="index"
                     :use-prompt="usePrompt"
                     :delete-message="deleteMessage"
-                />
-                <MsgContent :message="message" />
-                <MessageActions
-                    v-if="message.is_bot"
-                    :message="message"
-                    :message-index="index"
-                    :use-prompt="usePrompt"
-                    :delete-message="deleteMessage"
+                    :style="`flex-basis: ${isMobile ? '90%' : '80%'}; flex-grow: 0;`"
                 />
               </div>
             </v-col>
           </v-row>
         </v-container>
 
-        <div ref="grab" class="w-100" style="height: 200px;"></div>
+        <div ref="grab" class="w-100" style="height: 50px;"></div>
+      </div>
+      <div v-else>
+        <Welcome v-if="!route.params.id && conversation.messages.length === 0" />
       </div>
       <div v-else>
         <Welcome v-if="!route.params.id && conversation.messages.length === 0" />

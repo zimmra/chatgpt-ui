@@ -4,7 +4,13 @@ export const getDefaultConversationData = () => {
     return {
         id: null,
         topic: null,
-        messages: [],
+        messages: [
+            // {message: '我是你的小可爱我是你是你的小可爱是你的小可爱我是你的小可爱'},
+            // {id: null, is_bot: true, message: '小可爱'},
+            // {message: '小可爱'},
+            // {id: null, is_bot: true, message: '小可爱'},
+            // {id: null, is_bot: true, message: '小可爱啦\n```python\nprint("Hello World! Hello World! Hello World! Hello World! Hello World!")\n```'},
+        ],
         loadingMessages: false,
     }
 }
