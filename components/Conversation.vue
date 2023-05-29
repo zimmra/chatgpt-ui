@@ -1,5 +1,4 @@
 <script setup>
-import { mergeProps } from 'vue';
 import {EventStreamContentType, fetchEventSource} from '@microsoft/fetch-event-source'
 
 const { isMobile } = useDevice();
@@ -198,54 +197,35 @@ onNuxtReady(() => {
 </script>
 
 <template>
-  <div v-show="props.conversationPanel" class="container">
-  <div v-if="conversation">
-    <div
-        v-if="conversation.loadingMessages"
-        class="text-center"
-    >
+  <div v-if="props.conversationPanel && conversation" style="width: 100%">
+    <div v-if="conversation.loadingMessages" class="text-center">
       <v-progress-circular
           indeterminate
           color="primary"
       ></v-progress-circular>
     </div>
-    <div v-else>
-      <div
-          v-if="conversation.messages.length > 0"
-          ref="chatWindow"
-      >
-        <v-container>
-          <v-row>
-            <v-col
-                v-for="(message, index) in conversation.messages" :key="index"
-                cols="12"
-            >
-              <div
-                  class="d-flex align-center"
-                  :class="message.is_bot ? 'justify-start' : 'justify-end'"
-              >
-                <MsgContent
-                    :message="message"
-                    :message-index="index"
-                    :use-prompt="usePrompt"
-                    :delete-message="deleteMessage"
-                    :style="`flex-basis: ${isMobile ? '90%' : '80%'}; flex-grow: 0;`"
-                />
-              </div>
-            </v-col>
-          </v-row>
-        </v-container>
-
-        <div ref="grab" class="w-100" style="height: 50px;"></div>
+    <div v-else-if="conversation.messages.length > 0" 
+      ref="chatWindow"
+      style="width: 100%;"
+    >
+      <div class="d-flex flex-column flex-grow-1 ml-4 mr-4">
+        <div
+          v-for="(message, index) in conversation.messages" :key="index"
+          class="d-flex flex-grow-1 align-center"
+          :class="message.is_bot ? 'justify-start' : 'justify-end'"
+        >
+          <MsgContent
+            :message="message"
+            :message-index="index"
+            :use-prompt="usePrompt"
+            :delete-message="deleteMessage"
+            :style="`max-width: ${isMobile ? '95%' : '80%'};`"
+          />
+        </div>
       </div>
-      <div v-else>
-        <Welcome v-if="!route.params.id && conversation.messages.length === 0" />
-      </div>
-      <div v-else>
-        <Welcome v-if="!route.params.id && conversation.messages.length === 0" />
-      </div>
+      <div ref="grab" class="w-100" style="height: 50px;"></div>
     </div>
-  </div>
+    <Welcome v-else-if="!route.params.id && conversation.messages.length === 0" />
   </div>
 
 
@@ -353,9 +333,3 @@ onNuxtReady(() => {
     </template>
   </v-snackbar>
 </template>
-
-<style scoped>
-.container {
-  flex-grow: 1;
-}
-</style>

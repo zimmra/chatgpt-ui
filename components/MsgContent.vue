@@ -158,7 +158,7 @@ onMounted(() => {
       :color="message.is_bot ? '' : 'primary'"
       rounded="lg"
       elevation="2"
-      :style="isMobile ? `max-width: 330px;` : ''"
+      style="width: 100%;"
     >
       <div
         v-if="isMobile"
@@ -186,18 +186,15 @@ onMounted(() => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .chat-message-container {
   display: flex;
   flex-direction: column;
-
-  &:hover {
-    .chat-message-top-actions {
-      opacity: 1;
-      left: 5px;
-      pointer-events: all;
-    }
-  }
+}
+.chat-message-container:hover .chat-message-top-actions {
+  opacity: 1;
+  left: 5px;
+  pointer-events: all;
 }
 .chat-message-top-actions {
   font-size: 0.875rem;
@@ -210,17 +207,18 @@ onMounted(() => {
 
   display: flex;
   flex-direction: row-reverse;
-
-  .chat-message-top-action {
-    opacity: 0.5;
-    white-space: nowrap;
-    cursor: pointer;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
 }
+.chat-message-top-actions .chat-message-top-action {
+  opacity: 0.5;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.chat-message-top-actions .chat-message-top-action:hover {
+  opacity: 1;
+}
+</style>
+
+<style>
 .chat-msg-content {
   font-weight: 400;
   line-height: 1.25rem;
@@ -253,6 +251,7 @@ onMounted(() => {
   padding-left: 2em;
 }
 .hljs-code-container {
+  width: 100%;
   border-radius: 3px;
   overflow: auto;
 }
