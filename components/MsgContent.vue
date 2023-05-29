@@ -158,7 +158,7 @@ onMounted(() => {
       :color="message.is_bot ? '' : 'primary'"
       rounded="lg"
       elevation="2"
-      style="width: 100%;"
+      style="max-width: 100%"
     >
       <div
         v-if="isMobile"
