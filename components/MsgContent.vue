@@ -28,6 +28,10 @@ const props = defineProps({
     type: Function,
     required: true
   },
+  retryMessage: {
+    type: Function,
+    required: true
+  },
   deleteMessage: {
     type: Function,
     required: true
@@ -60,7 +64,7 @@ const editMessage = () => {
   props.usePrompt(props.message.message)
 }
 
-const deleteMessage = async () => {
+const deleteMessage = async (verbose=true) => {
   // 成对删除 user + assistant 的消息
 
   // 如何当前 message 有 id
@@ -70,8 +74,10 @@ const deleteMessage = async () => {
     })
     if (!error.value) {
       props.deleteMessage(props.messageIndex)
-      showSnackbar($i18n.t('deleted') + '!')
-    } else {
+      if (verbose) {
+        showSnackbar($i18n.t('deleted') + '!')
+      }
+    } else if (verbose) {
       showSnackbar($i18n.t('deleteFailed') + '!')
     }
   } 
@@ -86,7 +92,9 @@ const deleteMessage = async () => {
     //   props.deleteMessage(props.messageIndex)
     //   props.deleteMessage(props.messageIndex - 1)
     // }
-    showSnackbar($i18n.t('deleted') + '!')
+    if (verbose){
+      showSnackbar($i18n.t('deleted') + '!')
+    }
   }
 }
 
@@ -147,9 +155,12 @@ onMounted(() => {
       <div class="chat-message-top-action" @click="deleteMessage">
         {{ $i18n.t('delete') }}
       </div>
-      <div class="chat-message-top-action mr-2" @click="editMessage">
+      <div v-if="!message.is_bot" class="chat-message-top-action mr-2" @click="editMessage">
         {{ $i18n.t('edit') }}
       </div>
+      <!-- <div v-if="message.is_bot" class="chat-message-top-action mr-2" @click="retryMessage">
+        {{ $i18n.t('retry') }}
+      </div> -->
       <div class="chat-message-top-action mr-2" @click="copyMessage">
         {{ $i18n.t('copy') }}
       </div>

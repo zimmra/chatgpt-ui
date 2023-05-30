@@ -59,6 +59,7 @@
   "copied": "Copied",
   "delete": "Delete",
   "deleted": "Deleted",
+  "retry": "Retry",
   "deleteFailed": "Delete failed",
   "signOut": "Sign out",
   "resetPassword": "Reset password",

@@ -176,6 +176,45 @@ const usePrompt = (prompt) => {
   editor.value.usePrompt(prompt)
 }
 
+const deleteLastMessage = async (number) => {
+  if (number !== 2 && number !== 1) {
+    return
+  }
+  if (number === 2) {
+    // 数据库和前端删除最后一条 assistant 消息
+    const messageAIIndex = props.conversation.messages.length - 1
+    const messageAI = props.conversation.messages[messageAIIndex]
+    const { data, error } = await useAuthFetch(`/api/chat/messages/${messageAI.id}/`, {
+      method: 'DELETE'
+    })
+    if (!error.value) {
+      deleteMessage(messageAIIndex)
+    }
+  }
+  // 数据库删除最后一条 user 消息
+  const messageUserIndex = props.conversation.messages.length - 1
+  const messageUser = props.conversation.messages[messageUserIndex]
+  await useAuthFetch(`/api/chat/messages/${messageUser.id}/`, {
+    method: 'DELETE'
+  })
+}
+
+const retryMessage = async () => {
+  const message1 = props.conversation.messages[props.conversation.messages.length - 1]
+  const message2 = props.conversation.messages[props.conversation.messages.length - 2]
+  if (message1.is_bot && !message2.is_bot) {
+    await deleteLastMessage(2)
+    fetchingResponse.value = true
+    fetchReply(message2.message)
+    scrollChatWindow()
+  } else if (!message1.is_bot) {
+    await deleteLastMessage(1)
+    fetchingResponse.value = true
+    fetchReply(message1.message)
+    scrollChatWindow()
+  }
+}
+
 const deleteMessage = (index) => {
   props.conversation.messages.splice(index, 1)
 }
@@ -206,6 +245,7 @@ onNuxtReady(() => {
     </div>
     <div v-else-if="conversation.messages.length > 0" 
       ref="chatWindow"
+      class="d-flex flex-column justify-space-between"
       style="width: 100%;"
     >
       <div class="d-flex flex-column flex-grow-1 ml-4 mr-4">
@@ -218,6 +258,7 @@ onNuxtReady(() => {
             :message="message"
             :message-index="index"
             :use-prompt="usePrompt"
+            :retry-message="retryMessage"
             :delete-message="deleteMessage"
             :style="`max-width: ${isMobile ? '95%' : '80%'};`"
           />
@@ -246,9 +287,26 @@ onNuxtReady(() => {
         />
         <v-tooltip location="top" :text="$t('cosplayStore')">
           <template v-slot:activator="{props}">
-            <v-btn v-bind="props" icon @click="openMaskStore()" v-show="!fetchingResponse" :title="$t('cosplayStore')">
+            <v-btn v-bind="props" icon @click="openMaskStore" v-show="!fetchingResponse" :title="$t('cosplayStore')">
               <v-icon 
                 icon="fa:fa-solid fa-store" 
+                size="20" 
+                style="padding-bottom: 2px;"
+              />
+            </v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip location="top" :text="$t('retry')">
+          <template v-slot:activator="{props}">
+            <v-btn 
+              icon 
+              v-bind="props" 
+              v-show="!fetchingResponse" 
+              :title="$t('retry')"
+              @click="retryMessage" 
+            >
+              <v-icon 
+                icon="fa:fa-solid fa-arrows-rotate" 
                 size="20" 
                 style="padding-bottom: 2px;"
               />
@@ -276,8 +334,8 @@ onNuxtReady(() => {
               :label="$t('frugalMode')"
           ></v-switch>
           <v-dialog
-              transition="dialog-bottom-transition"
-              width="auto"
+            transition="dialog-bottom-transition"
+            width="auto"
           >
             <template v-slot:activator="{ props }">
               <v-icon
@@ -312,7 +370,6 @@ onNuxtReady(() => {
         ></v-btn>
         <MsgEditor ref="editor" :send-message="send" :disabled="fetchingResponse" :loading="fetchingResponse" />
       </div>
-
     </div>
   </v-footer>
   <v-snackbar
