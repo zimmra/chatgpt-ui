@@ -301,7 +301,7 @@ onNuxtReady(() => {
             <v-btn 
               icon 
               v-bind="props" 
-              v-show="!fetchingResponse" 
+              v-show="!fetchingResponse && conversation.messages.length > 0" 
               :title="$t('retry')"
               @click="retryMessage" 
             >
