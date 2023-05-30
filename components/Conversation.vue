@@ -144,11 +144,11 @@ const fetchReply = async (message) => {
   }
 }
 
-const scrollChatWindow = () => {
+const scrollChatWindow = (behavior='smooth') => {
   if (grab.value === null) {
     return;
   }
-  grab.value.scrollIntoView({behavior: 'smooth'})
+  grab.value.scrollIntoView({behavior: behavior})
 }
 
 const send = (message) => {
@@ -157,6 +157,7 @@ const send = (message) => {
     addConversation(props.conversation)
   }
   props.conversation.messages.push({message: message})
+  scrollChatWindow('instant')
   fetchReply(message)
   scrollChatWindow()
 }
