@@ -162,7 +162,6 @@ const send = (message) => {
   scrollChatWindow()
 }
 const stop = () => {
-  abortFetch()
   useAuthFetch('/api/stop_conversation/')
 }
 
