@@ -163,6 +163,7 @@ const send = (message) => {
 }
 const stop = () => {
   abortFetch()
+  useAuthFetch('/api/stop_conversation/')
 }
 
 const snackbar = ref(false)
