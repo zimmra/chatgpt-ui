@@ -1,4 +1,6 @@
 <script setup>
+import { mergeProps } from 'vue';
+
 const menu = ref(false)
 const prompts = ref([])
 const editingPrompt = ref(null)
@@ -97,15 +99,19 @@ onNuxtReady( () => {
         v-model="menu"
         :close-on-content-click="false"
     >
-      <template v-slot:activator="{ props }">
-        <v-btn
-            v-bind="props"
-            icon
-        >
-          <v-icon
-              icon="speaker_notes"
-          ></v-icon>
-        </v-btn>
+      <template v-slot:activator="{ props: menu }">
+        <v-tooltip location="top" :text="$t('prompt')">
+          <template v-slot:activator="{ props: tooltip }">
+            <v-btn
+              v-bind="mergeProps(menu, tooltip)"
+              icon
+            >
+              <v-icon
+                icon="speaker_notes"
+              ></v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
       </template>
 
       <v-container>
@@ -130,7 +136,7 @@ onNuxtReady( () => {
                 :key="prompt.id"
             >
               <v-list-item
-                  active-color="primary"
+                  color="primary"
                   v-if="editingPrompt && editingPrompt.id === prompt.id"
               >
                 <div class="d-flex flex-row" :style="{ marginTop: '5px' }">
@@ -176,7 +182,7 @@ onNuxtReady( () => {
               <v-list-item
                   v-if="!editingPrompt || editingPrompt.id !== prompt.id"
                   rounded="xl"
-                  active-color="primary"
+                  color="primary"
                   @click="selectPrompt(prompt)"
               >
                 <v-list-item-title>{{ prompt.title ? prompt.title : prompt.prompt }}</v-list-item-title>
@@ -201,7 +207,7 @@ onNuxtReady( () => {
             </template>
 
             <v-list-item
-                active-color="primary"
+                color="primary"
             >
               <div
                   class="pt-3"
@@ -220,7 +226,7 @@ onNuxtReady( () => {
             </v-list-item>
 
             <v-list-item
-                active-color="primary"
+                color="primary"
             >
               <div
                   class="pt-3"

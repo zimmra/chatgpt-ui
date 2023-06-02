@@ -1,5 +1,5 @@
 <template>
-  <ColorScheme placeholder="..." tag="span">
+  <ColorScheme placeholder="loading..." tag="span">
     <v-app
         :theme="$colorMode.value"
     >
@@ -8,8 +8,3 @@
     </v-app>
   </ColorScheme>
 </template>
-
-<!-- <script setup>
-import { useTheme } from 'vuetify'
-useTheme().global.name.value = useColorMode().value
-</script> -->

@@ -1,7 +1,9 @@
 <script setup>
 import {EventStreamContentType, fetchEventSource} from '@microsoft/fetch-event-source'
 
+const { isMobile } = useDevice();
 const { $i18n, $settings } = useNuxtApp()
+const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 const currentModel = useCurrentModel()
 const openaiApiKey = useApiKey()
@@ -16,7 +18,6 @@ const props = defineProps({
   openMaskStore: { type: Function, required: true },
   conversationPanel: { type: Boolean, required: true },
   maskTitle: { type: Array, required: true },
-  // maskAvatar: { type: String, required: true },
   fewShotMessages: { type: Array, required: true },
   showButtonGroup: { type: Array, required: true }
 })
@@ -143,11 +144,11 @@ const fetchReply = async (message) => {
   }
 }
 
-const scrollChatWindow = () => {
+const scrollChatWindow = (behavior='smooth') => {
   if (grab.value === null) {
     return;
   }
-  grab.value.scrollIntoView({behavior: 'smooth'})
+  grab.value.scrollIntoView({behavior: behavior})
 }
 
 const send = (message) => {
@@ -156,11 +157,12 @@ const send = (message) => {
     addConversation(props.conversation)
   }
   props.conversation.messages.push({message: message})
+  scrollChatWindow('instant')
   fetchReply(message)
   scrollChatWindow()
 }
 const stop = () => {
-  abortFetch()
+  useAuthFetch('/api/stop_conversation/')
 }
 
 const snackbar = ref(false)
@@ -173,6 +175,45 @@ const showSnackbar = (text) => {
 const editor = ref(null)
 const usePrompt = (prompt) => {
   editor.value.usePrompt(prompt)
+}
+
+const deleteLastMessage = async (number) => {
+  if (number !== 2 && number !== 1) {
+    return
+  }
+  if (number === 2) {
+    // 数据库和前端删除最后一条 assistant 消息
+    const messageAIIndex = props.conversation.messages.length - 1
+    const messageAI = props.conversation.messages[messageAIIndex]
+    const { data, error } = await useAuthFetch(`/api/chat/messages/${messageAI.id}/`, {
+      method: 'DELETE'
+    })
+    if (!error.value) {
+      deleteMessage(messageAIIndex)
+    }
+  }
+  // 数据库删除最后一条 user 消息
+  const messageUserIndex = props.conversation.messages.length - 1
+  const messageUser = props.conversation.messages[messageUserIndex]
+  await useAuthFetch(`/api/chat/messages/${messageUser.id}/`, {
+    method: 'DELETE'
+  })
+}
+
+const retryMessage = async () => {
+  const message1 = props.conversation.messages[props.conversation.messages.length - 1]
+  const message2 = props.conversation.messages[props.conversation.messages.length - 2]
+  if (message1.is_bot && !message2.is_bot) {
+    await deleteLastMessage(2)
+    fetchingResponse.value = true
+    fetchReply(message2.message)
+    scrollChatWindow()
+  } else if (!message1.is_bot) {
+    await deleteLastMessage(1)
+    fetchingResponse.value = true
+    fetchReply(message1.message)
+    scrollChatWindow()
+  }
 }
 
 const deleteMessage = (index) => {
@@ -196,56 +237,37 @@ onNuxtReady(() => {
 </script>
 
 <template>
-  <div v-show="props.conversationPanel">
-  <div v-if="conversation">
-    <div
-        v-if="conversation.loadingMessages"
-        class="text-center"
-    >
+  <div v-if="props.conversationPanel && conversation" style="width: 100%">
+    <div v-if="conversation.loadingMessages" class="text-center">
       <v-progress-circular
           indeterminate
           color="primary"
       ></v-progress-circular>
     </div>
-    <div v-else>
-      <div
-          v-if="conversation.messages"
-          ref="chatWindow"
-      >
-        <v-container>
-          <v-row>
-            <v-col
-                v-for="(message, index) in conversation.messages" :key="index"
-                cols="12"
-            >
-              <div
-                  class="d-flex align-center"
-                  :class="message.is_bot ? 'justify-start' : 'justify-end'"
-              >
-                <MessageActions
-                    v-if="!message.is_bot"
-                    :message="message"
-                    :message-index="index"
-                    :use-prompt="usePrompt"
-                    :delete-message="deleteMessage"
-                />
-                <MsgContent :message="message" />
-                <MessageActions
-                    v-if="message.is_bot"
-                    :message="message"
-                    :message-index="index"
-                    :use-prompt="usePrompt"
-                    :delete-message="deleteMessage"
-                />
-              </div>
-            </v-col>
-          </v-row>
-        </v-container>
-
-        <div ref="grab" class="w-100" style="height: 200px;"></div>
+    <div v-else-if="conversation.messages.length > 0" 
+      ref="chatWindow"
+      class="d-flex flex-column justify-space-between"
+      style="width: 100%;"
+    >
+      <div class="d-flex flex-column flex-grow-1 ml-4 mr-4">
+        <div
+          v-for="(message, index) in conversation.messages" :key="index"
+          class="d-flex flex-grow-1 align-center"
+          :class="message.is_bot ? 'justify-start' : 'justify-end'"
+        >
+          <MsgContent
+            :message="message"
+            :message-index="index"
+            :use-prompt="usePrompt"
+            :retry-message="retryMessage"
+            :delete-message="deleteMessage"
+            :style="`max-width: ${isMobile ? '95%' : '80%'};`"
+          />
+        </div>
       </div>
+      <div ref="grab" class="w-100" style="height: 50px;"></div>
     </div>
-  </div>
+    <Welcome v-else-if="!route.params.id && conversation.messages.length === 0" />
   </div>
 
 
@@ -264,13 +286,34 @@ onNuxtReady(() => {
           @update-avatar="updateAvatar"
           @reset-title="resetTitle"
         />
-        <v-btn icon @click="openMaskStore()" v-show="!fetchingResponse" :title="$t('cosplayStore')">
-          <v-icon 
-            icon="fa:fa-solid fa-store" 
-            size="20" 
-            style="padding-bottom: 2px;"
-          />
-        </v-btn>
+        <v-tooltip location="top" :text="$t('cosplayStore')">
+          <template v-slot:activator="{props}">
+            <v-btn v-bind="props" icon @click="openMaskStore" v-show="!fetchingResponse" :title="$t('cosplayStore')">
+              <v-icon 
+                icon="fa:fa-solid fa-store" 
+                size="20" 
+                style="padding-bottom: 2px;"
+              />
+            </v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip location="top" :text="$t('retry')">
+          <template v-slot:activator="{props}">
+            <v-btn 
+              icon 
+              v-bind="props" 
+              v-show="!fetchingResponse && conversation.messages.length > 0" 
+              :title="$t('retry')"
+              @click="retryMessage" 
+            >
+              <v-icon 
+                icon="fa:fa-solid fa-arrows-rotate" 
+                size="20" 
+                style="padding-bottom: 2px;"
+              />
+            </v-btn>
+          </template>
+        </v-tooltip>
         <v-switch
             v-if="$settings.open_web_search === 'True'"
             v-model="enableWebSearch"
@@ -292,8 +335,8 @@ onNuxtReady(() => {
               :label="$t('frugalMode')"
           ></v-switch>
           <v-dialog
-              transition="dialog-bottom-transition"
-              width="auto"
+            transition="dialog-bottom-transition"
+            width="auto"
           >
             <template v-slot:activator="{ props }">
               <v-icon
@@ -318,7 +361,7 @@ onNuxtReady(() => {
         </div>
 
       </v-toolbar>
-      <div class="d-flex align-center">
+      <div class="d-flex align-center pb-md-2">
         <v-btn
             v-show="fetchingResponse"
             icon="close"
@@ -328,7 +371,6 @@ onNuxtReady(() => {
         ></v-btn>
         <MsgEditor ref="editor" :send-message="send" :disabled="fetchingResponse" :loading="fetchingResponse" />
       </div>
-
     </div>
   </v-footer>
   <v-snackbar
@@ -349,14 +391,3 @@ onNuxtReady(() => {
     </template>
   </v-snackbar>
 </template>
-
-<style scoped>
-.container {
-  padding: 0;
-  margin: 0;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-</style>

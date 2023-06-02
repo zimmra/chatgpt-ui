@@ -1,6 +1,5 @@
 
 export const getDefaultConversationData = () => {
-    const { $i18n } = useNuxtApp()
     return {
         id: null,
         topic: null,

@@ -19,6 +19,20 @@ const fewShotMessages = ref(getDefaultFewShotMessages())
 const showButtonGroup = ref([])
 const totalMasks = ref(0)
 
+const { isMobile } = useDevice();
+const pfs = (() => {
+  if (isMobile) {
+        return { 
+          l: 'phone-large-font',
+          n: 'phone-font', 
+          s: 'phone-small-font', 
+          t: 'phone-tiny-font',
+        }
+    }
+    return { l: '', n: '', s: '', t: '' }
+})()
+
+
 const openMaskStore = () => {
   maskStore.value = true
   appBar.value = false
@@ -115,7 +129,7 @@ const resetTitle = () => {
     <v-btn icon="fa:fa-solid fa-store" title="store" v-if="maskStore" style="pointer-events: none;" >
     </v-btn>
 
-    <v-toolbar-title>
+    <v-toolbar-title :class="pfs.l">
       {{ maskStore ? $t('cosplayStore') : navTitle }}
       <div 
         v-if="maskStore"
@@ -160,8 +174,7 @@ const resetTitle = () => {
 
   </v-app-bar>
 
-  <v-main>
-    <Welcome v-if="!route.params.id && conversation.messages.length === 0 && !maskStore" />
+  <v-main class="d-flex">
     <transition name="slide-up">
       <MaskStore 
         v-if="maskStore"

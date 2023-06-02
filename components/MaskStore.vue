@@ -11,6 +11,22 @@ const emit = defineEmits([
   'useMask', 'updateMaskNumber'
 ])
 
+const { isMobile } = useDevice();
+const pfs = (() => {
+  if (isMobile) {
+        return { 
+          l: 'phone-large-font',
+          n: 'phone-font', 
+          s: 'phone-small-font', 
+          t: 'phone-tiny-font',
+          btnCustom: 'btn-custom-phone',
+          pd: 'pd-phone',
+          offset: '0 64',
+        }
+    } 
+    return { l: '', n: '', s: '', t: '', btnCustom: 'btn-custom', ph: '', offset: '' }
+})()
+
 const setMask = (title, avatar, mask) => {
   emit('useMask', {title: title, avatar: avatar, mask: mask})
 }
@@ -85,59 +101,58 @@ onNuxtReady( () => {
 </script>
 
 <template>
-  <v-container class="container">
-    <div class="list-custom">
-      <v-list>
-        <template
-          v-for="(item, idx) in fewShotMasks"
-          :key="item.id"
-        >
-          <v-list-item class="list-item-custom">
-            <div class="list-item-content-custom">
-              <div class="left-side-custom">
-                <v-icon class="icon-custom">{{ item.avatar }}</v-icon>
-                <div>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ `${$t('contain')} ${item.mask.length} ${$t('conversation')}` }}</v-list-item-subtitle>
-                </div>
-              </div>
-              <v-spacer></v-spacer>
-              <div class="right-side-custom">
-                <v-btn 
-                  color=""
-                  variant="outlined"
-                  @click="setMask(item.title, item.avatar, item.mask)"
-                  class="btn-custom"
-                >
-                  <v-icon icon="add"></v-icon>
-                  <span class="pl-1">{{ $t('use') }}</span>
-                </v-btn>
-                <v-btn 
-                  color=""
-                  variant="outlined"
-                  class="btn-custom"
-                  @click="onViewMask(idx)"
-                >
-                  <v-icon icon="remove_red_eye"></v-icon>
-                  <span class="pl-1">{{ $t('view') }}</span>
-                </v-btn>
-                <v-btn 
-                  color=""
-                  variant="outlined"
-                  class="btn-custom"
-                  @click="onDeleteMask(idx)"
-                >
-                  <v-icon icon="delete"></v-icon>
-                  <span class="pl-1">{{ $t('delete') }}</span>
-                </v-btn>
+  <v-container fluid class="container">
+    <v-list class="list-custom">
+      <template
+        v-for="(item, idx) in fewShotMasks"
+        :key="item.id"
+      >
+        <v-list-item class="list-item-custom">
+          <div class="list-item-content-custom" :class="pfs.pd">
+            <div class="left-side-custom">
+              <v-icon class="icon-custom" :class="pfs.l">{{ item.avatar }}</v-icon>
+              <div>
+                <v-list-item-title :class="pfs.n">{{ item.title }}</v-list-item-title>
+                <v-list-item-subtitle :class="pfs.s">{{ `${$t('contain')} ${item.mask.length} ${$t('conversation')}` }}</v-list-item-subtitle>
               </div>
             </div>
-          </v-list-item>
-        </template>
-      </v-list>
-    </div>
+            <div class="right-side-custom">
+              <v-btn 
+                :icon="isMobile"
+                color=""
+                variant="outlined"
+                @click="setMask(item.title, item.avatar, item.mask)"
+                :class="pfs.btnCustom"
+              >
+                <v-icon icon="add"></v-icon>
+                <span v-show="!isMobile">{{ $t('use') }}</span>
+              </v-btn>
+              <v-btn 
+                :icon="isMobile"
+                color=""
+                variant="outlined"
+                @click="onViewMask(idx)"
+                :class="pfs.btnCustom"
+              >
+                <v-icon icon="remove_red_eye"></v-icon>
+                <span v-show="!isMobile">{{ $t('view') }}</span>
+              </v-btn>
+              <v-btn 
+                :icon="isMobile"
+                color=""
+                variant="outlined"
+                @click="onDeleteMask(idx)"
+                :class="pfs.btnCustom"
+              >
+                <v-icon icon="delete"></v-icon>
+                <span v-show="!isMobile">{{ $t('delete') }}</span>
+              </v-btn>
+            </div>
+          </div>
+        </v-list-item>
+      </template>
+    </v-list>
 
-    <!-- Confirm Delete Dialog -->
     <v-dialog v-model="showDeleteDialog" max-width="500px">
       <v-card>
         <v-card-title class="headline">{{ $t('Confirm deletion') }}</v-card-title>
@@ -163,73 +178,68 @@ onNuxtReady( () => {
       </v-card>
     </v-dialog>
 
-    <!-- View Dialog -->
-    <v-dialog v-model="showViewDialog" max-width="800px">
+    <v-dialog v-model="showViewDialog" max-width="800px" width="auto">
       <v-card 
-        min-width="800" 
-        max-width="800"
-        class="card-custom"
+        class="card-size card-custom"
       >
         <v-card-title>
-          <span class="headline">{{ $t('viewCosplay') }}</span>
+          <span class="headline" :class="pfs.l">{{ $t('viewCosplay') }}</span>
         </v-card-title>
 
         <v-divider></v-divider>
 
         <v-list class="list-max-height">
-          <div class="pt-3 pl-7 pr-6 mask-title-custom">
+          <div class="pt-3 ml-1 mask-title-custom pd-custom">
             <h3 style="margin: 0 20px 20px 0;">{{ $t('maskTitle') }}</h3>
-            <v-btn 
+            <v-btn
               icon 
               variant="outlined"
               class="avatar-btn"
             >
-              <v-icon style="margin-bottom: 5px;">{{ fewShotMasks[viewMaskIndex].avatar }}</v-icon>
+              <v-icon style="margin-bottom: 5px;" :class="pfs.l">{{ fewShotMasks[viewMaskIndex].avatar }}</v-icon>
             </v-btn>
             <v-text-field
               v-model="fewShotMasks[viewMaskIndex].title"
               density="compact"
               variant="outlined"
             ></v-text-field>
-            <!-- <h3 style="margin: 0 20px 20px 60px;">{{ $t('avatar') }}</h3> -->
             <v-spacer></v-spacer>
           </div>
           <template
             v-for="(maskItem, idx) in fewShotMasks[viewMaskIndex].mask"
             :key="maskItem.id"
           >
-            <div class="pt-3 pl-6 pr-6 list-item-view-custom">
-              <v-btn-group 
+            <div class="pt-3 sub-list-item-custom pd-custom">
+              <v-btn 
+                icon
+                title="system" 
+                class="square"
+                elevation="0"
                 v-if="showButtonGroup[idx]"
-                v-model="maskItem.role"
-                density="compact"
-                class="btn-group"
-              > 
-                <v-btn 
-                  icon
-                  title="system" 
-                  class="square"
-                  :color="maskItem.role == 'system' ? 'primary' : ''"
-                >
-                  <v-icon icon="settings" size="24"></v-icon>
-                </v-btn>
-                <v-btn 
-                  icon 
-                  title="user" 
-                  class="square"
-                  :color="maskItem.role === 'user' ? 'primary' : ''"
-                >
-                  <v-icon icon="person" size="24"></v-icon>
-                </v-btn>
-                <v-btn 
-                  icon 
-                  title="assistant" 
-                  class="square"
-                  :color="maskItem.role === 'assistant' ? 'primary' : ''"
-                >
-                  <v-icon icon="smart_toy" size="24"></v-icon>
-                </v-btn>
-              </v-btn-group> 
+                :color="maskItem.role == 'system' ? 'primary' : ''"
+              >
+                <v-icon icon="settings" size="24"></v-icon>
+              </v-btn>
+              <v-btn 
+                icon 
+                title="user" 
+                class="square"
+                elevation="0"
+                v-if="showButtonGroup[idx]"
+                :color="maskItem.role === 'user' ? 'primary' : ''"
+              >
+                <v-icon icon="person" size="24"></v-icon>
+              </v-btn>
+              <v-btn 
+                icon 
+                title="assistant" 
+                class="square"
+                elevation="0"
+                v-if="showButtonGroup[idx]"
+                :color="maskItem.role === 'assistant' ? 'primary' : ''"
+              >
+                <v-icon icon="smart_toy" size="24"></v-icon>
+              </v-btn>
 
               <v-textarea 
                 rows="1"
@@ -267,33 +277,31 @@ onNuxtReady( () => {
 
 <style scoped>
 .container {
+  flex-grow: 1;
   padding: 0;
-  margin: 0;
-  position: relative;
-  left: 0;
-  right: 0;
+  display: flex;
 }
 .list-custom {
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow-y: auto;
+  flex-grow: 1;
 }
 .list-item-custom {
-  padding: 16px 16px !important;
-  border: 0.5px solid rgb(128, 128, 128);
-  margin: 0 20px;
+  margin: 0;
+  padding: 0;
 }
 .list-item-content-custom {
+  border: 0.5px solid rgb(128, 128, 128);
+  padding: 16px !important;
   display: flex;
   justify-content: space-between;
+  margin: 0 auto;
+  min-width: 500px;
+  max-width: 1000px;
 }
-.list-item-custom:first-child {
+.list-item-custom:first-child .list-item-content-custom {
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 }
-.list-item-custom:last-child {
+.list-item-custom:last-child .list-item-content-custom {
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
 }
@@ -313,11 +321,12 @@ onNuxtReady( () => {
   margin: 0 5px;
 }
 .card-custom {
+  padding: 0;
   display: flex;
   flex-direction: column;
 }
 .list-max-height {
-  max-height: 500px;
+  max-height: 400px;
   overflow: auto;
   padding: 0 0 5px 0;
 }
@@ -325,28 +334,72 @@ onNuxtReady( () => {
   display: flex;
   align-items: center;
 }
-.square {
-  padding: 5px;
-  margin: 0 5px;
-  border-radius: 5px !important;
-}
-.btn-group {
-  padding: 0 10px 0 0px;
-  border-radius: 0 !important;
-  display: flex;
-  align-items: center;
-}
-.list-item-view-custom {
+.sub-list-item-custom {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .textarea-custom {
   flex-grow: 1;
+  margin: 0 5px 0 10px;
 }
-.avatar-btn {
-  margin: 0 20px 20px 0;
-  height: 40px;
-  width: 40px;
+
+/* Phone */
+.btn-custom-phone {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.pd-phone {
+  min-width: 300px;
+  padding: 8px !important;
+}
+@media screen and (min-width: 851px) {
+  .card-size {
+    width: 800px;
+  }
+  .pd-custom {
+    padding: 0 24px 0 24px;
+  }
+}
+@media screen and (max-width: 850px) {
+  .card-size {
+    width: 500px;
+  }
+  .pd-custom {
+    padding: 0 16px 0 16px;
+  }
+}
+@media screen and (min-width: 501px) {
+  .square {
+    height: 36px;
+    width: 36px;
+    margin: 0 2px;
+    border-radius: 5px !important;
+  }
+  .avatar-btn {
+    margin: 0 20px 20px 0;
+    height: 40px;
+    width: 40px;
+  }
+}
+@media screen and (max-width: 500px) {
+  .card-size {
+    width: auto;
+  }
+  .pd-custom {
+    padding: 0 4px 0 12px;
+  }
+  .square {
+    height: 32px;
+    width: 32px;
+    margin: 0 1px;
+    border-radius: 5px !important;
+  }
+  .avatar-btn {
+    margin: 0 20px 20px 0;
+    height: 35px;
+    width: 35px;
+  }
 }
 </style>
