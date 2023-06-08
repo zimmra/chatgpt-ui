@@ -15,7 +15,6 @@ const maskStore = ref(false)
 const appBar = ref(true)
 const conversationPanel = ref(true)
 const maskTitle = ref([$i18n.t('newCosplay'), '😀'])
-const fewShotMessages = ref(getDefaultFewShotMessages())
 const showButtonGroup = ref([])
 const totalMasks = ref(0)
 
@@ -48,7 +47,18 @@ const closeMaskStore = () => {
 const loadConversation = async () => {
   const { data, error } = await useAuthFetch('/api/chat/conversations/' + route.params.id)
   if (!error.value) {
+    if (data.value.mask === '') {
+      data.value.mask = []
+    } else {
+      data.value.mask = JSON.parse(data.value.mask.replace(/'/g, '"'))
+    }
     conversation.value = Object.assign(conversation.value, data.value)
+    if (conversation.value.mask_title !== '') {
+      maskTitle.value[0] = conversation.value.mask_title
+    }
+    if (conversation.value.mask_avatar !== '') {
+      maskTitle.value[1] = conversation.value.mask_avatar
+    }
   }
 }
 
@@ -68,19 +78,16 @@ const createNewConversation = () => {
     topic: $i18n.t('newConversation')
   })
   // Reset the few shot mask
-  fewShotMessages.value.length = 0
   showButtonGroup.value.length = 0
 }
 
 const useMask = (data) => {
   maskTitle.value[0] = data.title
   maskTitle.value[1] = data.avatar
-  // maskTitle.value = data.title
-  // maskAvatar.value = data.avatar
   for (var i = 0; i < data.mask.length; i ++) {
     showButtonGroup.value.push(true)
   }
-  fewShotMessages.value = data.mask
+  conversation.value.mask = data.mask
   closeMaskStore()
 }
 
@@ -156,15 +163,6 @@ const resetTitle = () => {
       {{ $t('newConversation') }}
     </v-btn>
 
-    <!-- maskStore buttons -->
-    <!-- <v-btn 
-      v-if="maskStore"
-      icon="fa:fa-solid fa-upload">
-    </v-btn>
-    <v-btn 
-      v-if="maskStore"
-      icon="fa:fa-solid fa-download">
-    </v-btn> -->
     <v-btn 
       v-if="maskStore"
       icon="fa:fa-solid fa-xmark"
@@ -187,7 +185,6 @@ const resetTitle = () => {
       :open-mask-store="openMaskStore" 
       :conversation-panel="conversationPanel"
       :mask-title="maskTitle"
-      :few-shot-messages="fewShotMessages"
       :show-button-group="showButtonGroup"
       @update-avatar="updateAvatar"
       @reset-title="resetTitle"

@@ -18,7 +18,6 @@ const props = defineProps({
   openMaskStore: { type: Function, required: true },
   conversationPanel: { type: Boolean, required: true },
   maskTitle: { type: Array, required: true },
-  fewShotMessages: { type: Array, required: true },
   showButtonGroup: { type: Array, required: true }
 })
 const emit = defineEmits([
@@ -72,7 +71,9 @@ const fetchReply = async (message) => {
   const data = Object.assign({}, currentModel.value, {
     openaiApiKey: $settings.open_api_key_setting === 'True' ? openaiApiKey.value : null,
     message: message,
-    fewShotMask: props.fewShotMessages,
+    maskTitle: props.maskTitle[0],
+    maskAvatar: props.maskTitle[1],
+    fewShotMask: props.conversation.mask,
     conversationId: props.conversation.id,
     frugalMode: frugalMode.value
   }, webSearchParams)
@@ -281,7 +282,7 @@ onNuxtReady(() => {
         <FewShotMask 
           v-show="!fetchingResponse" 
           :mask-title="maskTitle"
-          :few-shot-messages="fewShotMessages" 
+          :few-shot-messages="conversation.mask" 
           :show-button-group="showButtonGroup"
           @update-avatar="updateAvatar"
           @reset-title="resetTitle"

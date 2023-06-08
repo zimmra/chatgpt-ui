@@ -114,7 +114,7 @@ const setAvatar = (emoji) => {
   <div>
     <v-menu v-model="menu" :close-on-content-click="false"> 
       <template v-slot:activator="{ props: menu }">
-        <v-tooltip location="top" :text="$t('presetFewShotMask')">
+        <v-tooltip location="top" :text="maskTitle[0]">
           <template v-slot:activator="{ props: tooltip }">
             <v-btn v-bind="mergeProps(menu, tooltip)" icon :title="$t('presetFewShotMask')">
               <v-icon 

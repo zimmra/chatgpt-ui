@@ -3,6 +3,9 @@ export const getDefaultConversationData = () => {
     return {
         id: null,
         topic: null,
+        mask_title: '',
+        mask_avatar: '',
+        mask: [],
         messages: [],
         loadingMessages: false,
     }
