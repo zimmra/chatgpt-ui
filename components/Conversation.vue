@@ -278,6 +278,21 @@ onNuxtReady(() => {
           density="comfortable"
           color="transparent"
       >
+        <v-btn 
+          icon 
+          :title="$t('usingKey')"
+          :disabled="true"
+          class="apikey-btn"
+        >
+          <span 
+            v-show="openaiApiKey === null || openaiApiKey === ''"
+          >{{ currentModel.name.substring(4, 7) }}</span>
+          <v-icon 
+            v-show="openaiApiKey !== null && openaiApiKey !== ''"
+            icon="vpn_key" 
+            size="20"
+          />
+        </v-btn>
         <Prompt v-show="!fetchingResponse" :use-prompt="usePrompt" />
         <FewShotMask 
           v-show="!fetchingResponse" 
@@ -333,19 +348,17 @@ onNuxtReady(() => {
               inline
               hide-details
               color="primary"
-              :label="$t('frugalMode')"
           ></v-switch>
           <v-dialog
             transition="dialog-bottom-transition"
             width="auto"
           >
             <template v-slot:activator="{ props }">
-              <v-icon
-                  color="grey"
-                  v-bind="props"
-                  icon="help_outline"
-                  class="ml-3"
-              ></v-icon>
+              <span 
+                color="gray"
+                v-bind="props"
+                class="ml-3 span-cursor"
+              >{{ $i18n.t(isMobile ? 'frugalModeShort' : 'frugalMode') }}</span>
             </template>
             <template v-slot:default="{ isActive }">
               <v-card>
@@ -392,3 +405,13 @@ onNuxtReady(() => {
     </template>
   </v-snackbar>
 </template>
+
+<style scoped>
+.apikey-btn {
+  opacity: 0.7;
+  margin: 0 !important;
+}
+.span-cursor:hover {
+  cursor: pointer;
+}
+</style>

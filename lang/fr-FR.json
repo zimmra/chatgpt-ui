@@ -70,6 +70,7 @@
   "maxTokenTips1": "La longueur maximale du contexte pour le modèle actuel est de",
   "maxTokenTips2": "jeton, ce qui inclut la longueur du prompt et la longueur du texte généré. Le paramètre Max Tokens ici fait référence à la longueur du texte généré. Vous devriez donc laisser de l'espace pour votre prompt et ne pas le régler trop grand ou à la limite maximale.",
   "frugalMode": "Mode éco",
+  "frugalModeShort": "éco",
   "frugalModeTip": "Activez le mode frugal, le client n'enverra pas les messages historiques à ChatGPT, ce qui peut économiser la consommation de jetons. Si vous souhaitez que ChatGPT comprenne le contexte de la conversation, veuillez désactiver le mode frugal.",
   "welcomeScreen": {
     "introduction1": "est un client non officiel pour ChatGPT, mais utilise l'API officielle d'OpenAI.",
