@@ -50,7 +50,7 @@ const loadConversation = async () => {
     if (data.value.mask === '') {
       data.value.mask = []
     } else {
-      data.value.mask = JSON.parse(data.value.mask.replace(/'/g, '"'))
+      data.value.mask = JSON.parse(data.value.mask)
     }
     conversation.value = Object.assign(conversation.value, data.value)
     if (conversation.value.mask_title !== '') {
