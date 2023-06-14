@@ -286,7 +286,11 @@ onNuxtReady(() => {
         >
           <span 
             v-show="openaiApiKey === null || openaiApiKey === ''"
-          >{{ currentModel.name.substring(4, 7) }}</span>
+            :data-attr="currentModel.name.substring(currentModel.name.length - 3) === '16k' ? '16k' : ''"
+            class="apikey"
+          >
+            {{ currentModel.name.substring(4, 7) }}
+          </span>
           <v-icon 
             v-show="openaiApiKey !== null && openaiApiKey !== ''"
             icon="vpn_key" 
@@ -409,7 +413,17 @@ onNuxtReady(() => {
 <style scoped>
 .apikey-btn {
   opacity: 0.7;
-  margin: 0 !important;
+  margin: 0 10px 0 -5px !important;
+}
+.apikey {
+  position: relative;
+}
+.apikey:after {
+  font-size: 0.6rem;
+  content: attr(data-attr);
+  position: absolute;
+  top: -10px;
+  right: -25px;
 }
 .span-cursor:hover {
   cursor: pointer;

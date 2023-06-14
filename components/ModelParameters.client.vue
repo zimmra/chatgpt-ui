@@ -2,18 +2,32 @@
 
 const dialog = ref(false)
 const currentModel = useCurrentModel()
-const availableModels = [
-    'gpt-3.5-turbo',
-    'gpt-4'
-]
+const reactiveCurrentModel = reactive({name: 'gpt-3.5-turbo'})
+const availableModels = Object.keys(MODELS)
 const currentModelDefault = ref(MODELS[currentModel.value.name])
+
+
+const modelChanged = () => {
+  // currentModel.value.max_tokens = currentModelDefault.value.max_tokens
+}
 
 onNuxtReady(() => {
   currentModel.value = getCurrentModel()
   watch(currentModel, (newVal, oldVal) => {
-    currentModelDefault.value = MODELS[newVal.name]
+    // currentModelDefault.value = MODELS[newVal.name]
     saveCurrentModel(newVal)
   }, { deep: true })
+  watch(
+    () => reactiveCurrentModel.name,
+    (newVal, oldVal) => {
+      currentModelDefault.value = MODELS[newVal]
+      currentModel.value = {
+        ...currentModel.value, 
+        name: newVal,
+        max_tokens: currentModelDefault.value.max_tokens
+      }
+    }
+  )
 })
 
 </script>
@@ -22,6 +36,7 @@ onNuxtReady(() => {
   <v-dialog
       v-model="dialog"
       persistent
+      max-width="768"
   >
     <template v-slot:activator="{ props }">
       <v-list-item
@@ -43,10 +58,11 @@ onNuxtReady(() => {
       </v-toolbar>
       <v-card-text>
         <v-select
-            v-model="currentModel.name"
+            v-model="reactiveCurrentModel.name"
             :label="$t('model')"
             :items="availableModels"
             variant="underlined"
+            :on-update:model-value="modelChanged()"
         ></v-select>
 
         <v-row
