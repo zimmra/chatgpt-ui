@@ -14,7 +14,18 @@ const md = new MarkdownIt({
   },
 })
 md.use(mathjax3)
+//加粗行内代码
+function boldInlineCode(md) {
+  const defaultRender = md.renderer.rules.code_inline;
+  md.renderer.rules.code_inline = function(tokens, idx, options, env, self) {
+    // 获取原始的渲染结果
+    const originalResult = defaultRender(tokens, idx, options, env, self);
+    // 在结果中添加 <strong> 标签和反引号
+    return `<strong>\`${originalResult}\`</strong>`;
+  };
+}
 
+md.use(boldInlineCode);
 const props = defineProps({
   message: {
     type: Object,
