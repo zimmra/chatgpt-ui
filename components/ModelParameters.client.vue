@@ -7,14 +7,10 @@ const availableModels = Object.keys(MODELS)
 const currentModelDefault = ref(MODELS[currentModel.value.name])
 
 
-const modelChanged = () => {
-  // currentModel.value.max_tokens = currentModelDefault.value.max_tokens
-}
-
 onNuxtReady(() => {
   currentModel.value = getCurrentModel()
+  reactiveCurrentModel.name = currentModel.value.name
   watch(currentModel, (newVal, oldVal) => {
-    // currentModelDefault.value = MODELS[newVal.name]
     saveCurrentModel(newVal)
   }, { deep: true })
   watch(
@@ -62,7 +58,6 @@ onNuxtReady(() => {
             :label="$t('model')"
             :items="availableModels"
             variant="underlined"
-            :on-update:model-value="modelChanged()"
         ></v-select>
 
         <v-row
