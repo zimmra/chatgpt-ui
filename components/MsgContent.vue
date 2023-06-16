@@ -14,27 +14,36 @@ const { isMobile } = useDevice();
 //     return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${hljs.highlight(code, { language: language, ignoreIllegals: true }).value}</code></pre>`
 //   },
 // })
+// const md = new MarkdownIt({
+//   linkify: true,
+//   typographer: true,
+// highlight: function (str, lang) {
+//   const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+//   let highlightedCode = hljs.highlight(str, { language: language, ignoreIllegals: true }).value
+//
+//   // Split the code into lines
+//   let lines = highlightedCode.split('\n');
+//
+//   // If the last line is empty, remove it
+//   if (lines[lines.length - 1] === '') {
+//     lines.pop();
+//   }
+//
+//   // Add line numbers
+//   highlightedCode = lines.map((line, i) => `<span style="display: inline-block; width: 2em; text-align: right; padding-right: 1em; color: #ccc;" class="line-number">${i + 1}</span>${line}`).join('\n');
+//
+//   return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${highlightedCode}</code></pre>`
+// },
+// })
 const md = new MarkdownIt({
   linkify: true,
   typographer: true,
-highlight: function (str, lang) {
-  const language = hljs.getLanguage(lang) ? lang : 'plaintext'
-  let highlightedCode = hljs.highlight(str, { language: language, ignoreIllegals: true }).value
-
-  // Split the code into lines
-  let lines = highlightedCode.split('\n');
-
-  // If the last line is empty, remove it
-  if (lines[lines.length - 1] === '') {
-    lines.pop();
-  }
-
-  // Add line numbers
-  highlightedCode = lines.map((line, i) => `<span style="display: inline-block; width: 2em; text-align: right; padding-right: 1em; color: #ccc;" class="line-number">${i + 1}</span>${line}`).join('\n');
-
-  return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${highlightedCode}</code></pre>`
-},
+  highlight(code, lang) {
+    const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+    return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${hljs.highlight(code, { language: language, ignoreIllegals: true }).value}</code></pre>`
+  },
 })
+
 md.use(mathjax3)
 //加粗行内代码
 function boldInlineCode(md) {
