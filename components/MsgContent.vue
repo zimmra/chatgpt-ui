@@ -6,35 +6,69 @@ import mathjax3 from 'markdown-it-mathjax3'
 
 const { $i18n } = useNuxtApp()
 const { isMobile } = useDevice();
-const md = new MarkdownIt({
-  linkify: true,
-  typographer: true,
-  highlight(code, lang) {
-    const language = hljs.getLanguage(lang) ? lang : 'plaintext'
-    return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${hljs.highlight(code, { language: language, ignoreIllegals: true }).value}</code></pre>`
-  },
-})
 // const md = new MarkdownIt({
 //   linkify: true,
 //   typographer: true,
-// highlight: function (str, lang) {
-//   const language = hljs.getLanguage(lang) ? lang : 'plaintext'
-//   let highlightedCode = hljs.highlight(str, { language: language, ignoreIllegals: true }).value
-//
-//   // Split the code into lines
-//   let lines = highlightedCode.split('\n');
-//
-//   // If the last line is empty, remove it
-//   if (lines[lines.length - 1] === '') {
-//     lines.pop();
-//   }
-//
-//   // Add line numbers
-//   highlightedCode = lines.map((line, i) => `<span style="display: inline-block; width: 2em; text-align: right; padding-right: 1em; color: #ccc;" class="line-number">${i + 1}</span>${line}`).join('\n');
-//
-//   return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${highlightedCode}</code></pre>`
-// },
+//   highlight(code, lang) {
+//     const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+//     return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${hljs.highlight(code, { language: language, ignoreIllegals: true }).value}</code></pre>`
+//   },
 // })
+const md = new MarkdownIt({
+  linkify: true,
+  typographer: true,
+  highlight: function (str, lang) {
+  const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+  let highlightedCode = hljs.highlight(str, { language: language, ignoreIllegals: true }).value
+
+  // Split the code into lines
+  let lines = highlightedCode.split('\n');
+
+  // If the last line is empty, remove it
+  if (lines[lines.length - 1] === '') {
+    lines.pop();
+  }
+
+  // Add line numbers with class name `line-number8ebx`
+  highlightedCode = lines.map((line, i) => `<span style="display: inline-block; width: 2em; text-align: right; padding-right: 1em; color: #ccc;" class="line-number8ebx">${i + 1}</span>${line}`).join('\n');
+
+  return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${highlightedCode}</code></pre>`
+},
+})
+
+document.addEventListener('click', function (e) {
+  if (e.target.matches('.hljs-copy-button')) {
+    // Get the code block
+    let codeBlock = e.target.parentNode.nextSibling;
+
+    // Check if the code block has already been processed
+    if (!codeBlock.dataset.processed) {
+      // Get the code HTML without line numbers
+      let html = codeBlock.innerHTML;
+
+      // Remove line numbers using a regular expression
+      let newHtml = html.replace(/<span style="display: inline-block; width: 2em; text-align: right; padding-right: 1em; color: #ccc;" class="line-number8ebx">\d+<\/span>/g, '');
+
+      // Replace the old HTML with the new one
+      codeBlock.innerHTML = newHtml;
+
+      // Mark the code block as processed
+      codeBlock.dataset.processed = 'true';
+
+      // Trigger the default click event
+      e.target.click();
+
+      // Prevent the default click event
+      e.preventDefault();
+
+      // Restore the original HTML
+      codeBlock.innerHTML = html;
+
+      // Remove the processed mark
+      delete codeBlock.dataset.processed;
+    }
+  }
+});
 
 md.use(mathjax3)
 //加粗行内代码
