@@ -6,14 +6,14 @@ import mathjax3 from 'markdown-it-mathjax3'
 
 const { $i18n } = useNuxtApp()
 const { isMobile } = useDevice();
-// const md = new MarkdownIt({
-//   linkify: true,
-//   typographer: true,
-//   highlight(code, lang) {
-//     const language = hljs.getLanguage(lang) ? lang : 'plaintext'
-//     return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${hljs.highlight(code, { language: language, ignoreIllegals: true }).value}</code></pre>`
-//   },
-// })
+const md = new MarkdownIt({
+  linkify: true,
+  typographer: true,
+  highlight(code, lang) {
+    const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+    return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${hljs.highlight(code, { language: language, ignoreIllegals: true }).value}</code></pre>`
+  },
+})
 // const md = new MarkdownIt({
 //   linkify: true,
 //   typographer: true,
@@ -35,14 +35,6 @@ const { isMobile } = useDevice();
 //   return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${highlightedCode}</code></pre>`
 // },
 // })
-const md = new MarkdownIt({
-  linkify: true,
-  typographer: true,
-  highlight(code, lang) {
-    const language = hljs.getLanguage(lang) ? lang : 'plaintext'
-    return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${hljs.highlight(code, { language: language, ignoreIllegals: true }).value}</code></pre>`
-  },
-})
 
 md.use(mathjax3)
 //加粗行内代码
