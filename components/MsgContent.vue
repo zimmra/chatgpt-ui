@@ -281,6 +281,18 @@ onMounted(() => {
 .chat-msg-content h6 {
   margin-bottom: 1rem;
 }
+.chat-msg-content h1,
+.chat-msg-content h2,
+.chat-msg-content h3 {
+  padding: 10px 0;
+}
+.chat-msg-content h1 {
+  font-size: 1.75rem;
+}
+.chat-msg-content p {
+  line-height: 150%;
+}
+
 .chat-msg-content table {
   width: 100%;
   border-collapse: collapse;
