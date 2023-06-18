@@ -1,6 +1,7 @@
 <script setup>
-import { isMobile } from 'is-mobile'
-const { $i18n } = useNuxtApp()
+import {isMobile} from 'is-mobile'
+
+const {$i18n} = useNuxtApp()
 
 const props = defineProps({
   sendMessage: {
@@ -20,18 +21,11 @@ const props = defineProps({
 const message = ref('')
 const rows = ref(1)
 const autoGrow = ref(true)
+const textArea = ref()
 const hint = computed(() => {
   return isMobile() ? '' : $i18n.t('pressEnterToSendYourMessageOrShiftEnterToAddANewLine')
 })
-// watch(message, () => {
-//   // 获取文本框的 DOM 元素
-//   const textAreaElement = textArea.value.$el.getElementsByTagName('textarea')[0];
-//
-//   // 获取文本框的实时高度
-//   const textAreaHeight = textAreaElement.scrollHeight;
-//   // 输出高度到 console
-//   console.log('Text area height:', textAreaHeight);
-// });
+// 解决删除的时候行高变化慢一拍的问题，模拟一个信号
 let initialHeight;
 let heightPerLine;
 onMounted(async () => {
@@ -92,9 +86,9 @@ watch(message,() => {
     autoGrow.value = true
   }
 })
-
 const send = () => {
   let msg = message.value
+  // message.value = ""
   // remove the last "\n"
   if (msg[msg.length - 1] === "\n") {
     msg = msg.slice(0, -1)
@@ -104,8 +98,6 @@ const send = () => {
   }
   message.value = ""
 }
-
-const textArea = ref()
 
 const usePrompt = (prompt) => {
   message.value = prompt
@@ -126,8 +118,7 @@ const enterOnly = (event) => {
       send();
       // 当前没有正在进行输入法组合输入
     }
-  }
-  else {
+  } else {
     // 手机上回车只做换行操作
     const textarea = textArea.value;
     const start = textarea.selectionStart;
