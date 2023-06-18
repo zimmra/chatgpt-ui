@@ -85,5 +85,6 @@ const limitations = ref([
 <style scoped>
 .container {
   min-width: 300px;
+  max-width: 1200px;
 }
 </style>

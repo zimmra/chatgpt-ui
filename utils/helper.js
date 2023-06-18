@@ -15,6 +15,15 @@ export const getDefaultFewShotMessages = () => {
     return []
 }
 
+export const getDefaultMask = () => {
+    return {
+        title: '',
+        avatar: '',
+        mask: [],
+        shared: false,
+    }
+}
+
 export const getConversations = async () => {
     const { data, error } = await useAuthFetch('/api/chat/conversations/')
     if (!error.value) {
@@ -66,3 +75,28 @@ export const logout = () => {
     user.value = null
     return navigateTo('/account/signin');
 }
+
+export const deepCopy = (obj) => {  
+    // 判断是否为基本数据类型  
+    if (typeof obj !== 'object' || obj === null) {  
+      return obj;  
+    }  
+      
+    let result;  
+      
+    // 判断是对象还是数组  
+    if (Array.isArray(obj)) {  
+      result = [];  
+    } else {  
+      result = {};  
+    }  
+      
+    // 递归复制属性或元素  
+    for (let key in obj) {  
+      if (obj.hasOwnProperty(key)) {  
+        result[key] = deepCopy(obj[key]);  
+      }  
+    }  
+      
+    return result;  
+  }  

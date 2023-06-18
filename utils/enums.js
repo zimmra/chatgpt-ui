@@ -21,7 +21,7 @@ export const MODELS = {
         presence_penalty: 0.0,
         total_tokens: 4096,
         max_tokens: 1000,
-        temperature: 0.7,
+        temperature: 1.0,
         top_p: 1.0
     },
     'gpt-3.5-turbo-16k': {
@@ -30,7 +30,7 @@ export const MODELS = {
         presence_penalty: 0.0,
         total_tokens: 16384,
         max_tokens: 4000,
-        temperature: 0.7,
+        temperature: 1.0,
         top_p: 1.0
     },
     'gpt-4': {
@@ -39,7 +39,7 @@ export const MODELS = {
         presence_penalty: 0.0,
         total_tokens: 8192,
         max_tokens: 2000,
-        temperature: 0.7,
+        temperature: 1.0,
         top_p: 1.0
     }
 }

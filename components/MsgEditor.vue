@@ -153,7 +153,6 @@ defineExpose({
     <v-textarea
         ref="textArea"
         v-model="message"
-        :label="$t('writeAMessage')"
         :placeholder="hint"
         :rows="rows"
         max-rows="8"
@@ -161,16 +160,17 @@ defineExpose({
         :disabled="disabled"
         :loading="loading"
         :hide-details="true"
-        clearable
         variant="outlined"
+        append-inner-icon="fa:fa-solid fa-paper-plane"
         @keydown.enter.exact="enterOnly"
+        @click:append-inner="clickSendBtn"
     ></v-textarea>
-    <v-btn
+    <!-- <v-btn
         :disabled="loading"
         icon="fa:fa-solid fa-paper-plane"
         title="Send"
         class="ml-3 pr-1"
         @click="clickSendBtn"
-    ></v-btn>
+    ></v-btn> -->
   </div>
 </template>

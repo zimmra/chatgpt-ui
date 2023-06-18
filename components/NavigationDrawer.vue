@@ -184,7 +184,7 @@ const drawer = useDrawer()
               <v-divider></v-divider>
               <v-list density="compact">
 
-                <v-dialog v-model="clearConfirmDialog" persistent>
+                <v-dialog v-model="clearConfirmDialog" persistent max-width="768">
                   <template v-slot:activator="{ props }">
                     <v-list-item v-bind="props" rounded="xl" prepend-icon="delete_forever"
                       :title="$t('clearConversations')"></v-list-item>
@@ -211,8 +211,6 @@ const drawer = useDrawer()
 
                 <ApiKeyDialog v-if="$settings.open_api_key_setting === 'True'" />
 
-                <ModelParameters />
-
                 <v-menu>
                   <template v-slot:activator="{ props }">
                     <v-list-item v-bind="props" rounded="xl" :title="$t('themeMode')">
@@ -223,7 +221,12 @@ const drawer = useDrawer()
                     </v-list-item>
                   </template>
                   <v-list>
-                    <v-list-item v-for="(theme, idx) in themes" :key="idx" @click="setTheme(theme.value)">
+                    <v-list-item 
+                      v-for="(theme, idx) in themes" 
+                      @click="setTheme(theme.value)"
+                      :key="idx" 
+                      :active="theme.value === $colorMode.value"
+                    >
                       <v-list-item-title>{{ theme.title }}</v-list-item-title>
                     </v-list-item>
                   </v-list>

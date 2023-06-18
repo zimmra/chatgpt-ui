@@ -270,6 +270,7 @@ onMounted(() => {
 .chat-message-container {
   display: flex;
   flex-direction: column;
+  margin: 5px 0;
 }
 .chat-message-container:hover .chat-message-top-actions {
   opacity: 1;
