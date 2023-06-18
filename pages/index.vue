@@ -78,6 +78,7 @@ const createNewConversation = () => {
     topic: $i18n.t('newConversation')
   })
   // Reset the few shot mask
+  resetTitle()
   showButtonGroup.value.length = 0
 }
 
@@ -133,6 +134,12 @@ const resetTitle = () => {
   <v-app-bar>
     <v-app-bar-nav-icon v-if="appBar" @click="drawer = !drawer">
     </v-app-bar-nav-icon>
+
+    <v-btn 
+      v-if="maskStore"
+      icon="fa:fa-solid fa-arrow-left"
+      @click="closeMaskStore()"
+    ></v-btn>
     <v-btn icon="fa:fa-solid fa-store" title="store" v-if="maskStore" style="pointer-events: none;" >
     </v-btn>
 
@@ -163,23 +170,14 @@ const resetTitle = () => {
       {{ $t('newConversation') }}
     </v-btn>
 
-    <v-btn 
-      v-if="maskStore"
-      icon="fa:fa-solid fa-xmark"
-      @click="closeMaskStore()"
-    >
-    </v-btn>
-
   </v-app-bar>
 
   <v-main class="d-flex">
-    <transition name="slide-up">
-      <MaskStore 
-        v-if="maskStore"
-        @use-mask="useMask"
-        @update-mask-number="updateMaskNumber"
-      />
-    </transition>
+    <MaskStore 
+      v-if="maskStore"
+      @use-mask="useMask"
+      @update-mask-number="updateMaskNumber"
+    />
     <Conversation 
       :conversation="conversation"
       :open-mask-store="openMaskStore" 
@@ -197,12 +195,5 @@ const resetTitle = () => {
   font-size: 0.8em;
   font-weight: 400;
   margin-top: -4px;
-}
-@keyframes axisY {
-  from { transform: translateY(5%); }
-  to { transform: translateY(0px); }
-}
-.slide-up-enter-active {
-  animation: axisY 0.3s;
 }
 </style>

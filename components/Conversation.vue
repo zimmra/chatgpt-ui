@@ -1,6 +1,8 @@
 <script setup>
 import {EventStreamContentType, fetchEventSource} from '@microsoft/fetch-event-source'
+import ChatGPTLogo from '@/assets/chatgpt.svg'
 
+const user = useUser()
 const { isMobile } = useDevice();
 const { $i18n, $settings } = useNuxtApp()
 const route = useRoute()
@@ -12,6 +14,12 @@ const messageQueue = []
 const frugalMode = ref(false)
 let isProcessingQueue = false
 const grab = ref(null)
+
+const getUserNameShort = () => {
+  return user.value.username.substring(0, 1).toUpperCase();
+}
+const userName = getUserNameShort()
+const colorMode = useColorMode()
 
 const props = defineProps({
   conversation: { type: Object, required: true },
@@ -238,7 +246,7 @@ onNuxtReady(() => {
 </script>
 
 <template>
-  <div v-if="props.conversationPanel && conversation" style="width: 100%">
+  <div v-if="props.conversationPanel && conversation" style="width: 100%" class="d-flex justify-center">
     <div v-if="conversation.loadingMessages" class="text-center">
       <v-progress-circular
           indeterminate
@@ -247,23 +255,29 @@ onNuxtReady(() => {
     </div>
     <div v-else-if="conversation.messages.length > 0" 
       ref="chatWindow"
-      class="d-flex flex-column justify-space-between"
+      class="d-flex flex-column justify-space-between main-content"
       style="width: 100%;"
     >
       <div class="d-flex flex-column flex-grow-1 ml-4 mr-4">
         <div
           v-for="(message, index) in conversation.messages" :key="index"
-          class="d-flex flex-grow-1 align-center"
+          class="d-flex align-start"
           :class="message.is_bot ? 'justify-start' : 'justify-end'"
         >
+          <div v-if="message.is_bot && !isMobile" class="avatar-bot">
+            <img :src="ChatGPTLogo" alt="ChatGPT">
+          </div>
           <MsgContent
             :message="message"
             :message-index="index"
             :use-prompt="usePrompt"
             :retry-message="retryMessage"
             :delete-message="deleteMessage"
-            :style="`max-width: ${isMobile ? '95%' : '80%'};`"
+            :style="`max-width: ${isMobile ? '95%' : '75%'};`"
           />
+          <div v-if="!message.is_bot && !isMobile" class="avatar-user">
+            <div class="avatar-text">{{ userName }}</div>
+          </div>
         </div>
       </div>
       <div ref="grab" class="w-100" style="height: 50px;"></div>
@@ -271,32 +285,19 @@ onNuxtReady(() => {
     <Welcome v-else-if="!route.params.id && conversation.messages.length === 0" />
   </div>
 
-
-  <v-footer app v-show="props.conversationPanel">
-    <div class="px-md-16 w-100 d-flex flex-column">
+  <v-footer 
+    app 
+    v-show="props.conversationPanel" 
+    class="d-flex justify-center" 
+    :style="`box-shadow: 0 0 20px 15px ${$colorMode.value === 'light' ? '#fff': '#121212'};`"
+    :color="$colorMode.value === 'light' ? 'white' : '#121212'" 
+  >
+    <div class="px-md w-100 d-flex flex-column">
       <v-toolbar
           density="comfortable"
           color="transparent"
       >
-        <v-btn 
-          icon 
-          :title="$t('usingKey')"
-          :disabled="true"
-          class="apikey-btn"
-        >
-          <span 
-            v-show="openaiApiKey === null || openaiApiKey === ''"
-            :data-attr="currentModel.name.substring(currentModel.name.length - 3) === '16k' ? '16k' : ''"
-            class="apikey"
-          >
-            {{ currentModel.name.substring(4, 7) }}
-          </span>
-          <v-icon 
-            v-show="openaiApiKey !== null && openaiApiKey !== ''"
-            icon="vpn_key" 
-            size="20"
-          />
-        </v-btn>
+        <ModelParameters v-if="!fetchingResponse" />
         <Prompt v-show="!fetchingResponse" :use-prompt="usePrompt" />
         <FewShotMask 
           v-show="!fetchingResponse" 
@@ -361,7 +362,7 @@ onNuxtReady(() => {
               <span 
                 color="gray"
                 v-bind="props"
-                class="ml-3 span-cursor"
+                class="ml-3 span-cursor frugal"
               >{{ $i18n.t(isMobile ? 'frugalModeShort' : 'frugalMode') }}</span>
             </template>
             <template v-slot:default="{ isActive }">
@@ -411,6 +412,31 @@ onNuxtReady(() => {
 </template>
 
 <style scoped>
+.avatar-bot {
+  margin: 22px 10px 0 10px;
+  padding: 8px 8px 2px 8px;
+  border-radius: 10px;
+  background-color: rgb(25, 195, 125);
+  transform: scale(0.7);
+}
+.avatar-user {
+  margin: 26px 10px 0 10px;
+  border-radius: 10px;
+  background-color: rgb(0, 62, 155);
+  transform: scale(0.8);
+}
+.avatar-text {
+  width: 51px;
+  height: 51px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+.main-content {
+  max-width: 1200px;
+}
 .apikey-btn {
   opacity: 0.7;
   margin: 0 10px 0 -5px !important;
@@ -427,5 +453,23 @@ onNuxtReady(() => {
 }
 .span-cursor:hover {
   cursor: pointer;
+}
+@media screen and (min-width: 1201px) {
+  .px-md {
+    padding: 0;
+    margin: 0 64px;
+    max-width: 1000px;
+  }
+}
+@media screen and (max-width: 1200px) {
+  .px-md {
+    padding: 0;
+    margin: 0 0;
+  }
+}
+@media screen and (max-width: 500px) {
+  .frugal {
+    font-size: 0.9rem;
+  }
 }
 </style>

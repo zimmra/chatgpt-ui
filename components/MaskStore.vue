@@ -1,12 +1,18 @@
 <script setup>
-const fewShotMasks = ref([])
-const showButtonGroup = ref([])
+import EmojiPicker from 'vue3-emoji-picker'
+import 'vue3-emoji-picker/css'
+
+const { $i18n } = useNuxtApp()
+const grab = ref(null)
+const fewShotMasks = ref([])      // All masks
+const currentMask = ref(getDefaultMask())   // Selected mask 
+const showButtonGroup = ref([])   // Button group of the selected mask
 const loadingMasks = ref(false)
 const showDeleteDialog = ref(false)
 const deleteMaskIndex = ref(null)
 const showViewDialog = ref(false)
 const viewMaskIndex = ref(null)
-const editableMask = ref(false)
+const showEmojiPicker = ref(false)
 const emit = defineEmits([
   'useMask', 'updateMaskNumber'
 ])
@@ -27,6 +33,16 @@ const pfs = (() => {
     return { l: '', n: '', s: '', t: '', btnCustom: 'btn-custom', ph: '', offset: '' }
 })()
 
+const snackbar = ref(false)
+const snackbarText = ref('')
+const showSnackbar = (text) => {
+  snackbarText.value = text
+  snackbar.value = true
+  setTimeout(() => {
+    snackbar.value = false
+  }, 2000)
+}
+
 const setMask = (title, avatar, mask) => {
   emit('useMask', {title: title, avatar: avatar, mask: mask})
 }
@@ -44,7 +60,8 @@ const loadFewShotMasks = async () => {
         title: data.value[i].title,
         avatar: data.value[i].avatar,
         mask: JSON.parse(data.value[i].mask),
-        id: data.value[i].id
+        id: data.value[i].id,
+        shared: data.value[i].shared,
       })
     }
   }
@@ -75,11 +92,8 @@ const deleteFewShotMask = async () => {
 
 const onViewMask = (idx) => {
   viewMaskIndex.value = idx
+  restoreFewShotMask(idx)
   showViewDialog.value = true
-  showButtonGroup.length = 0
-  for (var i = 0; i < fewShotMasks.value[idx].mask.length; i ++) {
-    showButtonGroup.value.push(true)
-  }
 }
 
 const adjustTextAreaHeightWhenFocus = (event, idx) => {
@@ -94,6 +108,105 @@ const adjustTextAreaHeightWhenBlur = (event, idx) => {
   textarea.rows = 1;
 }
 
+const addMessage = (index) => {
+  let item = currentMask.value.mask
+  const fewShotMessage = {
+    role: 'user',
+    content: ''
+  }
+  if (item.length === 0) {
+    fewShotMessage.role = 'system'
+    fewShotMessage.content = 'You are a helpful assistant.'
+    // showTitle.value = true
+  }
+  else if (item.length % 2 === 0) {
+    fewShotMessage.role = 'assistant'
+  }
+  showButtonGroup.value.push(true)
+  item.push(fewShotMessage)
+  // Here we use nextTink() before calling scrollIntoView because
+  // we need the `fewShotMessages,push` operation reflected in the DOM.
+  nextTick(() => {
+    grab.value.scrollIntoView({behavior: 'smooth', block: 'end'})
+  })
+}
+
+const deleteMessage = (index, idx) => {
+  showButtonGroup.value.splice(idx, 1)
+  currentMask.value.mask.splice(idx, 1)
+}
+
+const restoreFewShotMask = (index) => {
+  let item = fewShotMasks.value[index]
+  currentMask.value.title = item.title
+  currentMask.value.avatar = item.avatar
+  currentMask.value.mask = deepCopy(item.mask)
+  currentMask.value.shared = item.shared
+
+  showButtonGroup.length = 0
+  for (var i = 0; i < item.mask.length; i ++) {
+    showButtonGroup.value.push(true)
+  }
+}
+
+const submittingMask = ref(false)
+const updateFewShotMask = async (index) => {
+  let item = currentMask.value
+  // Check if empty
+  if (item.mask.length === 0) {
+    showSnackbar($i18n.t('maskEmpty'))
+    return
+  }
+  // Check if no changes
+  let previous = fewShotMasks.value[index]
+  console.log(item, previous)
+  if (item.title === previous.title && item.avatar === previous.avatar && item.mask.length === previous.mask.length) {
+    let flag = true
+    for (var i = 0; i < item.mask.length; i ++) {
+      if (item.mask[i] !== previous.mask[i]) {
+        flag = false
+        break
+      }
+    }
+    if (flag) {
+      showSnackbar($i18n.t('unchanged'))
+      return
+    }
+  }
+  // Start uploading
+  submittingMask.value = true
+  const { data, error } = await useAuthFetch(`/api/chat/masks/${previous.id}/`, {
+    method: 'PUT',
+    body: {
+      title: item.title,
+      avatar: item.avatar,
+      mask: JSON.stringify(item.mask)
+    }
+  })
+  if (!error.value) {
+    showSnackbar($i18n.t('updateSuccess'))
+    fewShotMasks.value[index].title = item.title
+    fewShotMasks.value[index].avatar = item.avatar
+    fewShotMasks.value[index].mask = item.mask
+    submittingMask.value = false
+    showViewDialog.value = false
+  }
+  else {
+    showSnackbar($i18n.t('updateFailed'))
+    submittingMask.value = false
+  }
+}
+
+const setAvatar = (emoji) => {
+  currentMask.value.avatar = emoji.i
+  showEmojiPicker.value = false
+}
+
+const setRole = (item, role) => {
+  if (!currentMask.value.shared) {
+    item.role = role
+  }
+}
 
 onNuxtReady( () => {
   loadFewShotMasks()
@@ -102,7 +215,14 @@ onNuxtReady( () => {
 
 <template>
   <v-container fluid class="container">
-    <v-list class="list-custom">
+    <div v-if="loadingMasks" class="d-flex justify-center flex-grow-1">
+      <v-progress-circular
+          indeterminate
+          color="primary"
+      ></v-progress-circular>
+    </div>
+    <!-- <transition name="slide-up"> -->
+    <v-list v-else class="list-custom">
       <template
         v-for="(item, idx) in fewShotMasks"
         :key="item.id"
@@ -138,6 +258,7 @@ onNuxtReady( () => {
                 <span v-show="!isMobile">{{ $t('view') }}</span>
               </v-btn>
               <v-btn 
+                :disabled="item.shared"
                 :icon="isMobile"
                 color=""
                 variant="outlined"
@@ -152,7 +273,8 @@ onNuxtReady( () => {
         </v-list-item>
       </template>
     </v-list>
-
+    <!-- </transition> -->
+    
     <v-dialog v-model="showDeleteDialog" max-width="500px">
       <v-card>
         <v-card-title class="headline">{{ $t('Confirm deletion') }}</v-card-title>
@@ -189,24 +311,35 @@ onNuxtReady( () => {
         <v-divider></v-divider>
 
         <v-list class="list-max-height">
-          <div class="pt-3 ml-1 mask-title-custom pd-custom">
+          <div 
+            v-if="currentMask.mask.length > 0"
+            class="pt-3 ml-1 mask-title-custom pd-custom"
+          >
             <h3 style="margin: 0 20px 20px 0;">{{ $t('maskTitle') }}</h3>
             <v-btn
               icon 
               variant="outlined"
+              @click="showEmojiPicker = currentMask.shared ? false : !showEmojiPicker"
               class="avatar-btn"
             >
-              <v-icon style="margin-bottom: 5px;" :class="pfs.l">{{ fewShotMasks[viewMaskIndex].avatar }}</v-icon>
+              <v-icon style="margin-bottom: 5px;" :class="pfs.l">{{ currentMask.avatar }}</v-icon>
             </v-btn>
             <v-text-field
-              v-model="fewShotMasks[viewMaskIndex].title"
+              v-model="currentMask.title"
               density="compact"
               variant="outlined"
+              :readonly="currentMask.shared"
             ></v-text-field>
+            <EmojiPicker
+              v-if="showEmojiPicker" 
+              class="emoji-picker-custom"
+              :native="true"
+              @select="setAvatar"
+            ></EmojiPicker>
             <v-spacer></v-spacer>
           </div>
           <template
-            v-for="(maskItem, idx) in fewShotMasks[viewMaskIndex].mask"
+            v-for="(maskItem, idx) in currentMask.mask"
             :key="maskItem.id"
           >
             <div class="pt-3 sub-list-item-custom pd-custom">
@@ -216,6 +349,7 @@ onNuxtReady( () => {
                 class="square"
                 elevation="0"
                 v-if="showButtonGroup[idx]"
+                @click="setRole(maskItem, 'system')" 
                 :color="maskItem.role == 'system' ? 'primary' : ''"
               >
                 <v-icon icon="settings" size="24"></v-icon>
@@ -226,6 +360,7 @@ onNuxtReady( () => {
                 class="square"
                 elevation="0"
                 v-if="showButtonGroup[idx]"
+                @click="setRole(maskItem, 'user')" 
                 :color="maskItem.role === 'user' ? 'primary' : ''"
               >
                 <v-icon icon="person" size="24"></v-icon>
@@ -236,6 +371,7 @@ onNuxtReady( () => {
                 class="square"
                 elevation="0"
                 v-if="showButtonGroup[idx]"
+                @click="setRole(maskItem, 'assistant')" 
                 :color="maskItem.role === 'assistant' ? 'primary' : ''"
               >
                 <v-icon icon="smart_toy" size="24"></v-icon>
@@ -250,7 +386,7 @@ onNuxtReady( () => {
                 class="textarea-custom"
                 :label="$t(`${maskItem.role}Preset`)"
                 :tabindex="idx + 1"
-                :readonly="!editableMask"
+                :readonly="currentMask.shared"
                 v-on:focus="adjustTextAreaHeightWhenFocus($event, idx)"
                 v-on:blur="adjustTextAreaHeightWhenBlur($event, idx)"
               >
@@ -258,8 +394,9 @@ onNuxtReady( () => {
 
               <v-btn
                 icon
-                v-if="showButtonGroup[idx]"
+                v-if="showButtonGroup[idx] && !currentMask.shared"
                 title="delete"
+                @click="deleteMessage(viewMaskIndex, idx)"
                 class="square"
                 color="transparent"  
                 elevation="0"
@@ -270,12 +407,68 @@ onNuxtReady( () => {
           </template> 
           <div ref="grab" class="w-100" style="height: 5px;"></div>
         </v-list>
+        <v-divider></v-divider>
+        <div class="action-custom">
+            <v-btn 
+              :disabled="currentMask.shared"
+              variant="outlined"
+              class="action-btn-custom"
+              :loading="submittingMask"
+              @click="updateFewShotMask(viewMaskIndex)"
+            >
+              <v-icon icon="save"></v-icon>
+              <span style="padding-left: 2px;">{{ $t('update') }}</span>
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn
+              :disabled="submittingMask || currentMask.shared"
+              variant="outlined"
+              @click="addMessage()"
+              class="action-btn-custom"
+            >
+              <v-icon icon="add_circle_outline"></v-icon>
+              <span style="padding-left: 2px;">{{ $t('addPresetFewShotMask') }}</span>
+            </v-btn>
+            <v-btn 
+              :disabled="submittingMask || currentMask.shared"
+              variant="outlined"
+              class="action-btn-custom"
+              @click="restoreFewShotMask(viewMaskIndex)"
+            >
+              <v-icon icon="refresh"></v-icon>
+              <span style="padding-left: 2px;">{{ $t('restore') }}</span>
+            </v-btn>
+        </div>
       </v-card>
     </v-dialog>
   </v-container>
+  <v-snackbar
+      v-model="snackbar"
+      multi-line
+      location="top"
+  >
+    {{ snackbarText }}
+
+    <template v-slot:actions>
+      <v-btn
+          color="red"
+          variant="text"
+          @click="snackbar = false"
+      >
+        {{ $t('close') }}
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <style scoped>
+/* @keyframes axisY {
+  from { transform: translateY(15%); }
+  to { transform: translateY(0px); }
+}
+.slide-up-enter-active {
+  animation: axisY 0.3s;
+} */
 .container {
   flex-grow: 1;
   padding: 0;
@@ -343,6 +536,20 @@ onNuxtReady( () => {
   flex-grow: 1;
   margin: 0 5px 0 10px;
 }
+.action-custom {
+  display: flex;
+  flex-direction: row-reverse;
+  margin: 10px 10px;
+}
+.action-btn-custom {
+  margin: 0 10px;
+}
+.emoji-picker-custom {
+  position: fixed;
+  z-index: 9999;
+  right: 48%;
+  bottom: 1%;
+}
 
 /* Phone */
 .btn-custom-phone {
@@ -386,6 +593,7 @@ onNuxtReady( () => {
 @media screen and (max-width: 500px) {
   .card-size {
     width: auto;
+    min-width: 335px;
   }
   .pd-custom {
     padding: 0 4px 0 12px;
@@ -400,6 +608,12 @@ onNuxtReady( () => {
     margin: 0 20px 20px 0;
     height: 35px;
     width: 35px;
+  }
+  .action-btn-custom {
+    margin: 0 0px !important;
+    padding: 0 10px;
+    /* font-size: 0.8rem; */
+    border: none;
   }
 }
 </style>

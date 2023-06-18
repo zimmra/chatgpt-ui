@@ -62,19 +62,22 @@ const addMessage = () => {
   })
 }
 
-const deleteFewShotMasks = (idx) => {
+const deleteMessage = (idx) => {
   props.showButtonGroup.splice(idx, 1)
   props.fewShotMessages.splice(idx, 1)
+  if (props.fewShotMessages.length === 0) {
+    emit('resetTitle')
+  }
 }
 
-const resetFewShotMasks = () => {
+const clearFewShotMask = () => {
   props.showButtonGroup.length = 0
   props.fewShotMessages.length = 0
   emit('resetTitle')
 }
 
 const submittingNewMask = ref(false)
-const saveFewShotMasks = async () => {
+const saveFewShotMask = async () => {
   if (props.fewShotMessages.length === 0) {
     return
   }
@@ -220,7 +223,7 @@ const setAvatar = (emoji) => {
                   icon
                   title="delete"
                   v-if="showButtonGroup[idx]"
-                  @click="deleteFewShotMasks(idx)"
+                  @click="deleteMessage(idx)"
                   class="square"
                   color="transparent"  
                   elevation="0"
@@ -237,11 +240,20 @@ const setAvatar = (emoji) => {
               variant="outlined"
               class="action-btn-custom"
               :loading="submittingNewMask"
-              @click="saveFewShotMasks()"
+              @click="saveFewShotMask()"
+            >
+              <v-icon icon="fa:fa-solid fa-store" :style="`font-size: ${isMobile ? 0.7 : 1}rem;`"></v-icon>
+              <span style="padding-left: 2px;">{{ $t('favorite') }}</span>
+            </v-btn>
+            <v-btn 
+              variant="outlined"
+              class="action-btn-custom"
+              @click="menu = false"
             >
               <v-icon icon="save"></v-icon>
               <span style="padding-left: 2px;">{{ $t('save') }}</span>
             </v-btn>
+            <v-spacer></v-spacer>
             <v-btn
               :disabled="submittingNewMask"
               variant="outlined"
@@ -251,15 +263,14 @@ const setAvatar = (emoji) => {
               <v-icon icon="add_circle_outline"></v-icon>
               <span style="padding-left: 2px;">{{ $t('addPresetFewShotMask') }}</span>
             </v-btn>
-            <v-spacer></v-spacer>
             <v-btn 
               :disabled="submittingNewMask"
               variant="outlined"
               class="action-btn-custom"
-              @click="resetFewShotMasks()"
+              @click="clearFewShotMask()"
             >
               <v-icon icon="refresh"></v-icon>
-              <span style="padding-left: 2px;">{{ $t('reset') }}</span>
+              <span style="padding-left: 2px;">{{ $t('clear') }}</span>
             </v-btn>
           </div>
         </v-card>
@@ -301,6 +312,7 @@ const setAvatar = (emoji) => {
 @media screen and (max-width: 500px) {
   .card-size {
     width: auto;
+    min-width: 335px;
   }
   .pd-custom {
     padding: 0 4px 0 12px;
@@ -315,6 +327,12 @@ const setAvatar = (emoji) => {
     margin: 0 20px 20px 0;
     height: 35px;
     width: 35px;
+  }
+  .action-btn-custom {
+    margin: 0 0px !important;
+    padding: 0 10px;
+    /* font-size: 0.8rem; */
+    border: none;
   }
 }
 .card-custom {

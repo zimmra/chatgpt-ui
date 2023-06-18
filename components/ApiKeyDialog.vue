@@ -2,6 +2,7 @@
   <v-dialog
       v-model="dialog"
       persistent
+      max-width="768"
   >
     <template v-slot:activator="{ props }">
       <v-list-item
