@@ -36,6 +36,7 @@ const md = new MarkdownIt({
 },
 })
 
+// Add a click event listener to remove the line numbers when copying
 document.addEventListener('click', function (e) {
   if (e.target.matches('.hljs-copy-button')) {
     // Get the code block
