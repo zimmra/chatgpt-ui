@@ -13,3 +13,7 @@
 .line-number8ebx {
   user-select: none;
 }
+.input-textarea textarea {
+  max-height: 300px;
+  overflow-y: auto;
+}
