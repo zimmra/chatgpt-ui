@@ -71,6 +71,12 @@
 }
 
 .input-textarea textarea {
-    max-height: 300px;
+    max-height: 250px;
     overflow-y: auto;
+}
+
+@media screen and (max-width: 600px) {
+    .input-textarea textarea {
+        max-height: 150px;
+    }
 }

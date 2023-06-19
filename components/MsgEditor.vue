@@ -22,6 +22,7 @@ const message = ref('')
 const rows = ref(1)
 const autoGrow = ref(true)
 const textArea = ref()
+const maxHeight = ref(0)
 const hint = computed(() => {
   return isMobile() ? '' : $i18n.t('pressEnterToSendYourMessageOrShiftEnterToAddANewLine')
 })
@@ -30,6 +31,7 @@ const watchflag = ref(true)
 onMounted(async () => {
   // 获取文本框的 DOM 元素
   const textAreaElement = textArea.value.$el.getElementsByTagName('textarea')[0];
+  maxHeight.value= parseInt(window.getComputedStyle(textAreaElement).maxHeight);
   textAreaElement.addEventListener('keydown', function (event) {
     if (event.key === 'Backspace' || event.key === 'Delete') {
       setTimeout(() => {
@@ -53,9 +55,9 @@ watch(message, () => {
       // 设置文本框的高度为其滚动内容的高度
       textAreaElement.style.height = `${textAreaElement.scrollHeight}px`;
     }
-    // 如果文本框的内容高度大于300px，那么显示滚动条；如果小于300px，那么隐藏滚动条
-    textAreaElement.style.overflowY = textAreaElement.scrollHeight > 300 ? 'auto' : 'hidden';
-    autoGrow.value = textAreaElement.scrollHeight <= 300;
+    // 如果文本框的内容高度大于maxHeight.value，那么显示滚动条；如果小于maxHeight.value，那么隐藏滚动条
+    textAreaElement.style.overflowY = textAreaElement.scrollHeight > maxHeight.value ? 'auto' : 'hidden';
+    autoGrow.value = textAreaElement.scrollHeight <= maxHeight.value;
   } else {
     watchflag.value = true
   }
@@ -80,9 +82,9 @@ const usePrompt = async (prompt) => {
   autoGrow.value = false
   await nextTick();
   textAreaElement.style.height = 'auto';
-  textAreaElement.style.height = `${Math.min(textAreaElement.scrollHeight, 300)}px`;
-  autoGrow.value = textAreaElement.scrollHeight <= 300;
-  textAreaElement.style.overflowY = textAreaElement.scrollHeight > 300 ? 'auto' : 'hidden';
+  textAreaElement.style.height = `${Math.min(textAreaElement.scrollHeight, maxHeight.value)}px`;
+  autoGrow.value = textAreaElement.scrollHeight <= maxHeight.value;
+  textAreaElement.style.overflowY = textAreaElement.scrollHeight > maxHeight.value ? 'auto' : 'hidden';
   textArea.value.focus();
 }
 
