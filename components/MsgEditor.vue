@@ -40,13 +40,14 @@ onMounted(async () => {
   const textAreaElement = textArea.value.$el.getElementsByTagName('textarea')[0];
   maxHeight.value = parseInt(window.getComputedStyle(textAreaElement).maxHeight);
   textAreaElement.addEventListener('keydown', function (event) {
-    if (event.key === 'Backspace' || event.key === 'Delete') {
+    if (event.key === 'Backspace' || event.key === 'Delete' || event.key === "Enter") {
       setTimeout(adjustTextAreaHeight, 0);
     }
   })
   textAreaElement.addEventListener('click', function (event) {
     setTimeout(adjustTextAreaHeight, 0);
   })
+  await nextTick();
   window.addEventListener("click", function (event) {
     setTimeout(adjustTextAreaHeight, 0);
   })
@@ -78,6 +79,7 @@ watch(message, () => {
 })
 const send = () => {
   let msg = message.value
+  usePrompt("")
   // remove the last "\n"
   if (msg[msg.length - 1] === "\n") {
     msg = msg.slice(0, -1)
@@ -85,7 +87,6 @@ const send = () => {
   if (msg.length > 0) {
     props.sendMessage(msg)
   }
-  message.value = ""
 }
 
 // usePrompt是一个赋值函数，能够给输入框正确赋值，用它！
@@ -99,7 +100,13 @@ const usePrompt = async (prompt) => {
   textAreaElement.style.height = `${Math.min(textAreaElement.scrollHeight, maxHeight.value)}px`;
   autoGrow.value = textAreaElement.scrollHeight <= maxHeight.value;
   textAreaElement.style.overflowY = textAreaElement.scrollHeight > maxHeight.value ? 'auto' : 'hidden';
+  await nextTick();
+  textAreaElement.style.height = 'auto';
+  textAreaElement.style.height = `${Math.min(textAreaElement.scrollHeight, maxHeight.value)}px`;
+  autoGrow.value = textAreaElement.scrollHeight <= maxHeight.value;
+  textAreaElement.style.overflowY = textAreaElement.scrollHeight > maxHeight.value ? 'auto' : 'hidden';
   textArea.value.focus();
+
 }
 
 const clickSendBtn = () => {
