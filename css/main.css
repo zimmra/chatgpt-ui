@@ -64,3 +64,7 @@
   width: 6px;
   height: 6px;
 }
+.input-textarea textarea {
+  max-height: 300px;
+  overflow-y: auto;
+}
