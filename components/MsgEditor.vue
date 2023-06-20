@@ -1,5 +1,5 @@
 <script setup>
-import {isMobile} from 'is-mobile'
+const { isMobile } = useDevice();
 
 const {$i18n} = useNuxtApp()
 
@@ -24,7 +24,7 @@ const autoGrow = ref(true)
 const textArea = ref()
 const maxHeight = ref(0)
 const hint = computed(() => {
-  return isMobile() ? '' : $i18n.t('pressEnterToSendYourMessageOrShiftEnterToAddANewLine')
+  return isMobile ? '' : $i18n.t('pressEnterToSendYourMessageOrShiftEnterToAddANewLine')
 })
 const watchflag = ref(true)
 
@@ -88,6 +88,12 @@ const send = () => {
   }
 }
 
+const focus = () => {
+  nextTick(() => {
+    textArea.value.focus()
+  })
+}
+
 // usePrompt是一个赋值函数，能够给输入框正确赋值，用它！
 const usePrompt = async (prompt) => {
   watchflag.value = false
@@ -109,7 +115,7 @@ const clickSendBtn = () => {
 
 const enterOnly = (event) => {
   event.preventDefault();
-  if (!isMobile()) {
+  if (!isMobile) {
     if (event.isComposing) {
       // 当前正在进行输入法组合输入
       // 什么也不做
@@ -132,7 +138,7 @@ const enterOnly = (event) => {
 }
 
 defineExpose({
-  usePrompt
+  usePrompt, focus
 })
 </script>
 
@@ -152,6 +158,7 @@ defineExpose({
         :hide-details="true"
         class="input-textarea"
         variant="outlined"
+        :density="isMobile ? 'compact' : 'default'"
         append-inner-icon="fa:fa-solid fa-paper-plane"
         @keydown.enter.exact="enterOnly"
         @click:append-inner="clickSendBtn"

@@ -7,6 +7,7 @@ definePageMeta({
 })
 
 const { $i18n } = useNuxtApp()
+const { isMobile } = useDevice();
 const runtimeConfig = useRuntimeConfig()
 const drawer = useDrawer()
 const route = useRoute()
@@ -17,8 +18,8 @@ const conversationPanel = ref(true)
 const maskTitle = ref([$i18n.t('newCosplay'), '😀'])
 const showButtonGroup = ref([])
 const totalMasks = ref(0)
+const density = isMobile ? 'compact' : 'default'
 
-const { isMobile } = useDevice();
 const pfs = (() => {
   if (isMobile) {
         return { 
@@ -131,27 +132,30 @@ const resetTitle = () => {
 </script>
 
 <template>
-  <v-app-bar>
-    <v-app-bar-nav-icon v-if="appBar" @click="drawer = !drawer">
+  <v-app-bar :density="density">
+    <v-app-bar-nav-icon 
+      v-if="appBar" 
+      @click="drawer = !drawer"
+      :density="density"
+    >
     </v-app-bar-nav-icon>
 
     <v-btn 
       v-if="maskStore"
       icon="fa:fa-solid fa-arrow-left"
       @click="closeMaskStore()"
+      class="toolbar-btn"
+      :density="density"
     ></v-btn>
-    <v-btn icon="fa:fa-solid fa-store" title="store" v-if="maskStore" style="pointer-events: none;" >
-    </v-btn>
 
     <v-toolbar-title :class="pfs.l">
       {{ maskStore ? $t('cosplayStore') : navTitle }}
       <div 
-        v-if="maskStore"
+        v-if="maskStore && !isMobile"
         class="v-subtitle"
       >{{ $t('masksTotal1') + totalMasks + $t('masksTotal2') }}</div>
     </v-toolbar-title>
 
-    <v-spacer></v-spacer>
 
     <!-- appBar buttons -->
     <v-btn
@@ -191,9 +195,15 @@ const resetTitle = () => {
 </template>
 
 <style scoped>
+@media screen and (max-width: 500px) {
+  .toolbar-btn {
+    font-size: 0.8rem;
+    margin: 0 5px;
+  }
+}
 .v-subtitle {  
-  font-size: 0.8em;
+  font-size: 0.7em;
   font-weight: 400;
-  margin-top: -4px;
+  margin-top: -6px;
 }
 </style>

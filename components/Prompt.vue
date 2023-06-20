@@ -105,6 +105,7 @@ onNuxtReady( () => {
             <v-btn
               v-bind="mergeProps(menu, tooltip)"
               icon
+              class="toolbar-btn"
             >
               <v-icon
                 icon="speaker_notes"
@@ -119,11 +120,13 @@ onNuxtReady( () => {
             min-width="300"
             max-width="500"
         >
-          <v-card-title>
-            <span class="headline">{{ $t('frequentlyPrompts') }}</span>
-          </v-card-title>
-
-          <v-divider></v-divider>
+          <v-toolbar
+            density="compact"
+            class="d-flex justify-between-spacing"
+            :height="isMobile ? '56': '64'"
+          >
+            <v-toolbar-title class="headline">{{ $t('frequentlyPrompts') }}</v-toolbar-title>
+          </v-toolbar>
 
           <v-list>
             <v-list-item v-show="loadingPrompts">
@@ -263,5 +266,9 @@ onNuxtReady( () => {
 </template>
 
 <style scoped>
-
+@media screen and (max-width: 500px) {
+    .toolbar-btn {
+        font-size: 0.9rem;
+    }
+}
 </style>

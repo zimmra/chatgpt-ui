@@ -1,17 +1,13 @@
 <template>
-  <v-container class="container">
-    <v-row>
-      <v-col cols="12">
-        <div class="text-center">
-          <h2 class="text-h2">{{ $t('welcomeTo') }} <span class="text-primary">{{ runtimeConfig.public.appName }}</span></h2>
-          <p class="text-caption my-5">
-            {{ runtimeConfig.public.appName }} {{ $t('welcomeScreen.introduction1') }}
-            <br>
-          </p>
-        </div>
-      </v-col>
-    </v-row>
-    <v-row>
+  <v-container class="container d-flex flex-column justify-center">
+    <div class="text-center headtitle">
+      <h2 class="text-h4 text-md-h3 text-lg-h2" style="font-weight: bold;"><span class="text-primary">{{ runtimeConfig.public.appName }}</span></h2>
+      <!-- <p class="text-caption my-5">
+        {{ runtimeConfig.public.appName }} {{ $t('welcomeScreen.introduction1') }}
+        <br>
+      </p> -->
+    </div>
+    <v-row class="d-flex flex-grow-0 pb-md-16">
       <v-col cols="12" md="10" offset-md="1">
         <v-row>
           <v-col
@@ -83,8 +79,19 @@ const limitations = ref([
 </script>
 
 <style scoped>
+@media screen and (min-width: 960px) {
+  .headtitle {
+    position: relative;
+    bottom: 100px;
+  }
+}
+@media screen and (max-width: 959px) {
+  .headtitle {
+    margin-bottom: 20px;
+  }
+}
 .container {
   min-width: 300px;
-  max-width: 1200px;
+  max-width: 1100px;
 }
 </style>

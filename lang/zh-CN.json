@@ -99,6 +99,7 @@
   "frugalMode": "节俭模式",
   "frugalModeShort": "节俭",
   "frugalModeTip": "开启节俭模式，客户端不会把历史消息发送给ChatGPT，可以节省 token 的消耗。如果你想让 ChatGPT 了解对话的上下文，请关闭节俭模式。",
+  "stopGenerate": "停止生成",
   "settingDraw": "配置",
   "presetFewShotMask": "角色扮演",
   "addPresetFewShotMask": "新增",
@@ -130,8 +131,8 @@
   "close": "关闭",
   "usingKey": "使用中的秘钥",
   "welcomeScreen": {
-    "introduction1": "是一个非官方的ChatGPT客户端，但使用OpenAI的官方API",
-    "introduction2": "在使用本客户端之前，您需要一个OpenAI API密钥。",
+    "introduction1": "是一个非官方的 ChatGPT 客户端，但使用 OpenAI 的官方 API",
+    "introduction2": "在使用本客户端之前，您需要一个 OpenAI API 密钥。",
     "examples": {
       "title": "例子",
       "item1": "\"用简单的语言解释量子计算\"",
