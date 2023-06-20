@@ -28,16 +28,15 @@ const hint = computed(() => {
 })
 const watchflag = ref(true)
 
-// 解决删除的时候行高变化慢一拍的问题，模拟一个信号
-function adjustTextAreaHeight() {
-  const textAreaElement = textArea.value.$el.getElementsByTagName('textarea')[0];
-  textAreaElement.style.height = 'auto';
-  textAreaElement.style.height = `${textAreaElement.scrollHeight}px`;
-}
 
 onMounted(async () => {
   // 获取文本框的 DOM 元素
   const textAreaElement = textArea.value.$el.getElementsByTagName('textarea')[0];
+  // 解决删除的时候行高变化慢一拍的问题，模拟一个信号
+  function adjustTextAreaHeight() {
+  textAreaElement.style.height = 'auto';
+  textAreaElement.style.height = `${textAreaElement.scrollHeight}px`;
+  }
   maxHeight.value = parseInt(window.getComputedStyle(textAreaElement).maxHeight);
   textAreaElement.addEventListener('keydown', function (event) {
     if (event.key === 'Backspace' || event.key === 'Delete' || event.key === "Enter") {
