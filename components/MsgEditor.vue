@@ -99,11 +99,6 @@ const usePrompt = async (prompt) => {
   textAreaElement.style.height = `${Math.min(textAreaElement.scrollHeight, maxHeight.value)}px`;
   autoGrow.value = textAreaElement.scrollHeight <= maxHeight.value;
   textAreaElement.style.overflowY = textAreaElement.scrollHeight > maxHeight.value ? 'auto' : 'hidden';
-  await nextTick();
-  textAreaElement.style.height = 'auto';
-  textAreaElement.style.height = `${Math.min(textAreaElement.scrollHeight, maxHeight.value)}px`;
-  autoGrow.value = textAreaElement.scrollHeight <= maxHeight.value;
-  textAreaElement.style.overflowY = textAreaElement.scrollHeight > maxHeight.value ? 'auto' : 'hidden';
   textArea.value.focus();
 
 }
