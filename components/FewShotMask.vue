@@ -120,8 +120,8 @@ const setAvatar = (emoji) => {
         <v-tooltip location="top" :text="maskTitle[0]">
           <template v-slot:activator="{ props: tooltip }">
             <v-btn v-bind="mergeProps(menu, tooltip)" icon :title="$t('presetFewShotMask')" class="toolbar-btn">
-              <v-icon 
-                :icon="fewShotMessages.length === 0 ? 'face' : 'fa:fa-solid fa-mask'"
+              <v-icon
+                :icon="fewShotMessages.length === 0 ? 'fa:fa-solid fa-masks-theater' : 'fa:fa-solid fa-mask'"
                 style="padding-bottom: 2px;"
                 fade
               ></v-icon>
