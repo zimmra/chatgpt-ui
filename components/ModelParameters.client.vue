@@ -9,6 +9,7 @@ const availableModels = Object.keys(MODELS)
 const currentModelDefault = ref(MODELS[currentModel.value.name])
 const compactMode = ref(true)
 
+const { isMobile } = useDevice()
 const onSelectModel = (model) => {
   reactiveCurrentModel.name = model
   dialog.value = false
@@ -52,7 +53,7 @@ onNuxtReady(() => {
             icon 
             v-bind="mergeProps(props, tooltip)"
             :title="$t('usingKey')"
-            class="apikey-btn"
+            class="apikey-btn toolbar-btn"
           >
             <span 
               :data-attr="currentModel.name.substring(currentModel.name.length - 3) === '16k' ? '16k' : ''"
@@ -69,13 +70,14 @@ onNuxtReady(() => {
       <v-toolbar
           density="compact"
           class="d-flex justify-between-spacing"
+          :height="isMobile ? '56': '64'"
       >
-        <v-toolbar-title>{{ $t('modelParameters') }}</v-toolbar-title>
+        <v-toolbar-title class="headline">{{ $t('modelParameters') }}</v-toolbar-title>
 
         <v-btn v-show="compactMode" icon="fullscreen" @click="compactMode = !compactMode"></v-btn>
         <v-btn v-show="!compactMode" icon="fullscreen_exit" @click="compactMode = !compactMode"></v-btn>
       </v-toolbar>
-      <v-card-text v-show="compactMode">
+      <v-card-text v-show="compactMode" style="padding: 5px 10px;">
         <v-list class="d-flex flex-column">
           <v-list-item 
             class="flex-grow-1"
@@ -83,6 +85,8 @@ onNuxtReady(() => {
             @click="onSelectModel(item)"
             :key="idx"
             :active="reactiveCurrentModel.name === item"
+            :density="isMobile ? 'compact' : 'default'"
+            rounded="sm"
           >
             <v-list-item-title>
               {{ item }}
@@ -263,8 +267,13 @@ onNuxtReady(() => {
 </template>
 
 <style scoped>
-.apikey-btn {
-  margin: 0 !important;
+@media screen and (max-width: 500px) {
+  .apikey-btn {
+    margin: 0 !important;
+  }
+  .toolbar-btn {
+    font-size: 0.9rem;
+  }
 }
 .apikey {
   position: relative;

@@ -65,6 +65,7 @@ const abortFetch = () => {
     ctrl.abort()
   }
   fetchingResponse.value = false
+  editor.value.focus()
 }
 const fetchReply = async (message) => {
   ctrl = new AbortController()
@@ -280,22 +281,23 @@ onNuxtReady(() => {
           </div>
         </div>
       </div>
-      <div ref="grab" class="w-100" style="height: 50px;"></div>
+      <div ref="grab" class="w-100" style="height: 100px;"></div>
     </div>
     <Welcome v-else-if="!route.params.id && conversation.messages.length === 0" />
   </div>
 
   <v-footer 
     app 
-    v-show="props.conversationPanel" 
+    v-if="props.conversationPanel" 
     class="d-flex justify-center" 
-    :style="`box-shadow: 0 0 20px 15px ${$colorMode.value === 'light' ? '#fff': '#121212'};`"
+    :style="`box-shadow: 0 0 20px 5px ${$colorMode.value === 'light' ? '#fff': '#121212'}; padding-top: 0;`"
     :color="$colorMode.value === 'light' ? 'white' : '#121212'" 
   >
     <div class="px-md w-100 d-flex flex-column">
       <v-toolbar
           density="comfortable"
           color="transparent"
+          :height="isMobile ? '48' : '64'"
       >
         <ModelParameters v-if="!fetchingResponse" />
         <Prompt v-show="!fetchingResponse" :use-prompt="usePrompt" />
@@ -309,10 +311,9 @@ onNuxtReady(() => {
         />
         <v-tooltip location="top" :text="$t('cosplayStore')">
           <template v-slot:activator="{props}">
-            <v-btn v-bind="props" icon @click="openMaskStore" v-show="!fetchingResponse" :title="$t('cosplayStore')">
+            <v-btn v-bind="props" icon @click="openMaskStore" v-show="!fetchingResponse" :title="$t('cosplayStore')" class="toolbar-btn">
               <v-icon 
                 icon="fa:fa-solid fa-store" 
-                size="20" 
                 style="padding-bottom: 2px;"
               />
             </v-btn>
@@ -326,10 +327,10 @@ onNuxtReady(() => {
               v-show="!fetchingResponse && conversation.messages.length > 0" 
               :title="$t('retry')"
               @click="retryMessage" 
+              class="toolbar-btn"
             >
               <v-icon 
                 icon="fa:fa-solid fa-arrows-rotate" 
-                size="20" 
                 style="padding-bottom: 2px;"
               />
             </v-btn>
@@ -344,15 +345,26 @@ onNuxtReady(() => {
             :label="$t('webSearch')"
         ></v-switch>
         <v-spacer></v-spacer>
+        <v-btn
+          v-show="fetchingResponse"
+          text
+          prepend-icon="close"
+          title="stop"
+          class="mr-3"
+          variant="outlined"
+          @click="stop"
+        >{{ $i18n.t('stopGenerate') }}</v-btn>
+        <v-spacer></v-spacer>
         <div
             v-if="$settings.open_frugal_mode_control === 'True'"
             class="d-flex align-center"
         >
           <v-switch
-              v-model="frugalMode"
-              inline
-              hide-details
-              color="primary"
+            v-show="!fetchingResponse"
+            v-model="frugalMode"
+            inline
+            hide-details
+            color="primary"
           ></v-switch>
           <v-dialog
             transition="dialog-bottom-transition"
@@ -360,6 +372,7 @@ onNuxtReady(() => {
           >
             <template v-slot:activator="{ props }">
               <span 
+                v-show="!fetchingResponse"
                 color="gray"
                 v-bind="props"
                 class="ml-3 span-cursor frugal"
@@ -381,13 +394,13 @@ onNuxtReady(() => {
 
       </v-toolbar>
       <div class="d-flex align-center pb-md-2">
-        <v-btn
+        <!-- <v-btn
             v-show="fetchingResponse"
             icon="close"
             title="stop"
             class="mr-3"
             @click="stop"
-        ></v-btn>
+        ></v-btn> -->
         <MsgEditor ref="editor" :send-message="send" :disabled="fetchingResponse" :loading="fetchingResponse" />
       </div>
     </div>
@@ -412,6 +425,9 @@ onNuxtReady(() => {
 </template>
 
 <style scoped>
+.toolbar-btn {
+    font-size: 0.8rem;
+  }
 .avatar-bot {
   margin: 22px 10px 0 10px;
   padding: 8px 8px 2px 8px;
@@ -468,6 +484,9 @@ onNuxtReady(() => {
   }
 }
 @media screen and (max-width: 500px) {
+  .toolbar-btn {
+    font-size: 0.8rem;
+  }
   .frugal {
     font-size: 0.9rem;
   }

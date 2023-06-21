@@ -87,7 +87,7 @@ const saveFewShotMask = async () => {
     body: {
       title: props.maskTitle[0],
       avatar: props.maskTitle[1],
-      mask: JSON.stringify(props.fewShotMessages)
+      mask: JSON.stringify(props.fewShotMessages),
     }
   })
   submittingNewMask.value = false
@@ -119,7 +119,7 @@ const setAvatar = (emoji) => {
       <template v-slot:activator="{ props: menu }">
         <v-tooltip location="top" :text="maskTitle[0]">
           <template v-slot:activator="{ props: tooltip }">
-            <v-btn v-bind="mergeProps(menu, tooltip)" icon :title="$t('presetFewShotMask')">
+            <v-btn v-bind="mergeProps(menu, tooltip)" icon :title="$t('presetFewShotMask')" class="toolbar-btn">
               <v-icon 
                 :icon="fewShotMessages.length === 0 ? 'face' : 'fa:fa-solid fa-mask'"
                 style="padding-bottom: 2px;"
@@ -132,9 +132,13 @@ const setAvatar = (emoji) => {
 
       <v-container class="card-size card-custom">
         <v-card>
-          <v-card-title>
-            <span class="headline" :class="pfs.l">{{ $t('presetFewShotMask') }}</span>
-          </v-card-title>
+          <v-toolbar
+            density="compact"
+            class="d-flex justify-between-spacing"
+            :height="isMobile ? '56': '64'"
+          >
+            <v-toolbar-title class="headline">{{ $t('presetFewShotMask') }}</v-toolbar-title>
+          </v-toolbar>
 
           <v-divider></v-divider>
 
@@ -310,6 +314,9 @@ const setAvatar = (emoji) => {
   }
 }
 @media screen and (max-width: 500px) {
+  .toolbar-btn {
+    font-size: 0.9rem;
+  }
   .card-size {
     width: auto;
     min-width: 335px;

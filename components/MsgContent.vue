@@ -194,7 +194,7 @@ const bindCopyCodeToButtons = () => {
     copyButton.onclick = function () {
       copy(codeBody.textContent ?? '');
 
-      copyButton.innerHTML = "Copied!";
+      copyButton.innerHTML = " Copied! ";
       copyButton.dataset.copied = 'true';
 
       setTimeout(() => {
@@ -302,7 +302,6 @@ onMounted(() => {
 <style>
 .chat-msg-content {
   font-weight: 400;
-  line-height: 1.25rem;
   /* 气泡底部不要出现空白行, 抵消 p 的 1rem */
   margin-bottom: -1rem;
 }
@@ -318,13 +317,14 @@ onMounted(() => {
 .chat-msg-content h6 {
   margin-bottom: 1rem;
 }
-.chat-msg-content h1,
-.chat-msg-content h2,
-.chat-msg-content h3 {
-  padding: 10px 0;
-}
 .chat-msg-content h1 {
-  font-size: 1.75rem;
+  font-size: 1.4rem;
+}
+.chat-msg-content h2 {
+  font-size: 1.2rem;
+}
+.chat-msg-content h3 {
+  font-size: 1rem;
 }
 .chat-msg-content p {
   line-height: 150%;
