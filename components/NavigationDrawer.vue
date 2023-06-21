@@ -1,7 +1,6 @@
 <script setup>
 import { useDisplay } from 'vuetify'
 import { useDrawer } from "../composables/states";
-import { useTheme } from 'vuetify'
 
 const route = useRoute()
 const { $i18n, $settings } = useNuxtApp()
@@ -31,6 +30,45 @@ const setLang = (lang) => {
 }
 
 const conversations = useConversations()
+const defaultAppend = (obj, key, value) => {
+  if (!obj[key]) {
+    obj[key] = []
+  }
+  obj[key].push(value)
+}
+const groupedConversations = computed(() => {
+  conversations.value.sort((a, b) => b.updated_at.localeCompare(a.updated_at))
+  const now = new Date()
+  return conversations.value.reduce((result, item) => {
+    const itemDate = new Date(Date.parse(item.updated_at))
+    if (itemDate.getFullYear() === now.getFullYear() && itemDate.getMonth() === now.getMonth()) {
+      // 今天
+      const today = now.getDate()
+      switch (itemDate.getDate()) {
+        case today: 
+          defaultAppend(result, `${$i18n.t('today')}`, item)          
+          break
+        case today - 1: 
+          defaultAppend(result, `${$i18n.t('yesterday')}`, item)
+          break
+        case today - 2:
+        case today - 3:
+        case today - 4:
+        case today - 5:
+        case today - 6:
+          defaultAppend(result, `${$i18n.t('sevendays')}`, item)
+          break
+        default:
+          defaultAppend(result, `${$i18n.t('monthTip1')}${$i18n.t(`month.${itemDate.getMonth()}`)}${$i18n.t('monthTip2')}`, item)
+          break;
+      }
+    }
+    else {
+      defaultAppend(result, `${itemDate.getFullYear()}${$i18n.t('yearTip')}${$i18n.t(`month.${itemDate.getMonth()}`)} ${$i18n.t('yearTip') === '' ? itemDate.getFullYear() : ''}`, item)
+    }
+    return result
+  }, {})
+})
 
 const editingConversation = ref(null)
 const deletingConversationIndex = ref(null)
@@ -101,6 +139,7 @@ const signOut = async () => {
 
 onNuxtReady(async () => {
   loadConversations()
+  // console.log(groupedConversations)
 })
 
 const drawer = useDrawer()
@@ -145,30 +184,33 @@ const drawer = useDrawer()
       </v-list>
 
       <v-list>
-        <template v-for="(conversation, cIdx) in conversations" :key="conversation.id">
-          <v-list-item color="primary" rounded="xl"
-            v-if="editingConversation && editingConversation.id === conversation.id">
-            <v-text-field v-model="editingConversation.topic" :loading="editingConversation.updating" variant="underlined"
-              append-icon="done" hide-details density="compact" autofocus @keyup.enter="updateConversation(cIdx)"
-              @click:append="updateConversation(cIdx)"></v-text-field>
-          </v-list-item>
-          <v-hover v-if="!editingConversation || editingConversation.id !== conversation.id"
-            v-slot="{ isHovering, props }">
-            <v-list-item rounded="xl" color="primary" :to="conversation.id ? `/${conversation.id}` : '/'"
-              v-bind="props">
-              <v-list-item-title>{{ (conversation.topic && conversation.topic !== '') ? conversation.topic :
-                $t('defaultConversationTitle') }}</v-list-item-title>
-              <template v-slot:append>
-                <div v-show="isHovering && conversation.id">
-                  <v-btn icon="edit" size="small" variant="text" @click.prevent="editConversation(cIdx)">
-                  </v-btn>
-                  <v-btn icon="delete" size="small" variant="text" :loading="deletingConversationIndex === cIdx"
-                    @click.prevent="deleteConversation(cIdx)">
-                  </v-btn>
-                </div>
-              </template>
+        <template v-for="(items, date) in groupedConversations" :key="date">
+          <div class="d-flex align-center date-span"><span>{{ date }}</span></div>
+          <template v-for="(conversation, cIdx) in items" :key="conversation.id">
+            <v-list-item color="primary" rounded="xl"
+              v-if="editingConversation && editingConversation.id === conversation.id">
+              <v-text-field v-model="editingConversation.topic" :loading="editingConversation.updating" variant="underlined"
+                append-icon="done" hide-details density="compact" autofocus @keyup.enter="updateConversation(cIdx)"
+                @click:append="updateConversation(cIdx)"></v-text-field>
             </v-list-item>
-          </v-hover>
+            <v-hover v-if="!editingConversation || editingConversation.id !== conversation.id"
+              v-slot="{ isHovering, props }">
+              <v-list-item rounded="lg" color="primary" :to="conversation.id ? `/${conversation.id}` : '/'"
+                v-bind="props" class="ml-3">
+                <v-list-item-title>{{ (conversation.topic && conversation.topic !== '') ? conversation.topic :
+                  $t('defaultConversationTitle') }}</v-list-item-title>
+                <template v-slot:append>
+                  <div v-show="isHovering && conversation.id">
+                    <v-btn icon="edit" size="small" variant="text" @click.prevent="editConversation(cIdx)">
+                    </v-btn>
+                    <v-btn icon="delete" size="small" variant="text" :loading="deletingConversationIndex === cIdx"
+                      @click.prevent="deleteConversation(cIdx)">
+                    </v-btn>
+                  </div>
+                </template>
+              </v-list-item>
+            </v-hover>
+          </template>
         </template>
       </v-list>
     </div>
@@ -245,6 +287,16 @@ const drawer = useDrawer()
     </template>
   </v-navigation-drawer>
 </template>
+
+<style scoped>
+.date-span {
+  height: 48px;
+  margin: 0 15px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: rgb(142, 142, 160);
+}
+</style>
 
 <style>
 .v-navigation-drawer__content::-webkit-scrollbar {

@@ -167,6 +167,8 @@ const send = (message) => {
     addConversation(props.conversation)
   }
   props.conversation.messages.push({message: message})
+  const now = (new Date()).toISOString()
+  Object.assign(props.conversation, {created_at: now, updated_at: now})
   scrollChatWindow('instant')
   fetchReply(message)
   scrollChatWindow()
