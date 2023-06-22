@@ -69,7 +69,10 @@ const groupedConversations = computed(() => {
     return result
   }, {})
 })
-const open = Object.keys(groupedConversations.value)
+
+const open = computed(() => {
+  return Object.keys(groupedConversations.value)
+})
 
 const editingConversation = ref(null)
 const deletingConversationIndex = ref(null)
@@ -140,7 +143,6 @@ const signOut = async () => {
 
 onNuxtReady(async () => {
   loadConversations()
-  // console.log(groupedConversations)
 })
 
 const drawer = useDrawer()
