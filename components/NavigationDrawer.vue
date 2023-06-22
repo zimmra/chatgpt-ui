@@ -69,15 +69,16 @@ const groupedConversations = computed(() => {
     return result
   }, {})
 })
+const open = Object.keys(groupedConversations.value)
 
 const editingConversation = ref(null)
 const deletingConversationIndex = ref(null)
 
-const editConversation = (index) => {
-  editingConversation.value = conversations.value[index]
+const editConversation = (items, index) => {
+  editingConversation.value = items[index]
 }
 
-const updateConversation = async (index) => {
+const updateConversation = async (items, index) => {
   editingConversation.value.updating = true
   const { data, error } = await useAuthFetch(`/api/chat/conversations/${editingConversation.value.id}/`, {
     method: 'PUT',
@@ -86,20 +87,20 @@ const updateConversation = async (index) => {
     })
   })
   if (!error.value) {
-    conversations.value[index] = editingConversation.value
+    items[index] = editingConversation.value
   }
   editingConversation.value = null
 }
 
-const deleteConversation = async (index) => {
+const deleteConversation = async (items, index) => {
   deletingConversationIndex.value = index
-  const { data, error } = await useAuthFetch(`/api/chat/conversations/${conversations.value[index].id}/`, {
+  const { data, error } = await useAuthFetch(`/api/chat/conversations/${items[index].id}/`, {
     method: 'DELETE'
   })
   deletingConversationIndex.value = null
   if (!error.value) {
-    const deletingConversation = conversations.value[index]
-    conversations.value.splice(index, 1)
+    const deletingConversation = items[index]
+    items.splice(index, 1)
     if (route.params.id && parseInt(route.params.id) === deletingConversation.id) {
       await navigateTo('/')
     }
@@ -183,34 +184,63 @@ const drawer = useDrawer()
         </v-list-item>
       </v-list>
 
-      <v-list>
+      <v-list :opened="open">
         <template v-for="(items, date) in groupedConversations" :key="date">
-          <div class="d-flex align-center date-span"><span>{{ date }}</span></div>
-          <template v-for="(conversation, cIdx) in items" :key="conversation.id">
-            <v-list-item color="primary" rounded="xl"
-              v-if="editingConversation && editingConversation.id === conversation.id">
-              <v-text-field v-model="editingConversation.topic" :loading="editingConversation.updating" variant="underlined"
-                append-icon="done" hide-details density="compact" autofocus @keyup.enter="updateConversation(cIdx)"
-                @click:append="updateConversation(cIdx)"></v-text-field>
-            </v-list-item>
-            <v-hover v-if="!editingConversation || editingConversation.id !== conversation.id"
-              v-slot="{ isHovering, props }">
-              <v-list-item rounded="lg" color="primary" :to="conversation.id ? `/${conversation.id}` : '/'"
-                v-bind="props" class="ml-3">
-                <v-list-item-title>{{ (conversation.topic && conversation.topic !== '') ? conversation.topic :
-                  $t('defaultConversationTitle') }}</v-list-item-title>
-                <template v-slot:append>
-                  <div v-show="isHovering && conversation.id">
-                    <v-btn icon="edit" size="small" variant="text" @click.prevent="editConversation(cIdx)">
-                    </v-btn>
-                    <v-btn icon="delete" size="small" variant="text" :loading="deletingConversationIndex === cIdx"
-                      @click.prevent="deleteConversation(cIdx)">
-                    </v-btn>
-                  </div>
-                </template>
+          <v-list-group :value="date">
+            <template v-slot:activator="{ props }">
+              <v-list-item 
+                v-bind="props" 
+                class="d-flex align-center justify-space-between date-span"
+                :ripple="false"
+                style="cursor: default;"
+              ><span>{{ date }}</span></v-list-item>
+            </template>
+            <template v-for="(conversation, cIdx) in items" :key="conversation.id">
+              <v-list-item color="primary" rounded="xl"
+                v-if="editingConversation && editingConversation.id === conversation.id"
+              >
+                <div class="d-flex flex-row align-center">
+                  <v-text-field 
+                    v-model="editingConversation.topic" 
+                    :loading="editingConversation.updating"
+                    variant="solo"
+                    hide-details 
+                    density="compact" 
+                    autofocus 
+                    @keyup.enter="updateConversation(items, cIdx)"
+                    class="flex-grow-1"
+                  ></v-text-field>
+                <v-btn 
+                  icon="done" density="compact" color="transparent"
+                  @click="updateConversation(items, cIdx)"
+                  class="mr-3"
+                ></v-btn>
+                <v-btn 
+                  icon="close" density="compact" color="transparent"
+                  @click="editingConversation = null"
+                  class="mr-2"
+                ></v-btn>
+              </div>
               </v-list-item>
-            </v-hover>
-          </template>
+              <v-hover v-if="!editingConversation || editingConversation.id !== conversation.id"
+                v-slot="{ isHovering, props }">
+                <v-list-item rounded="lg" color="primary" :to="conversation.id ? `/${conversation.id}` : '/'"
+                  v-bind="props" class="ml-3">
+                  <v-list-item-title class="pl-1">{{ (conversation.topic && conversation.topic !== '') ? conversation.topic :
+                    $t('defaultConversationTitle') }}</v-list-item-title>
+                  <template v-slot:append>
+                    <div v-show="isHovering && conversation.id">
+                      <v-btn icon="edit" size="small" variant="text" @click.prevent="editConversation(items, cIdx)">
+                      </v-btn>
+                      <v-btn icon="delete" size="small" variant="text" :loading="deletingConversationIndex === cIdx"
+                        @click.prevent="deleteConversation(items, cIdx)">
+                      </v-btn>
+                    </div>
+                  </template>
+                </v-list-item>
+              </v-hover>
+            </template>
+          </v-list-group>
         </template>
       </v-list>
     </div>
@@ -291,7 +321,6 @@ const drawer = useDrawer()
 <style scoped>
 .date-span {
   height: 48px;
-  margin: 0 15px;
   font-size: 0.9rem;
   font-weight: bold;
   color: rgb(142, 142, 160);
@@ -299,6 +328,9 @@ const drawer = useDrawer()
 </style>
 
 <style>
+.v-list-group__items .v-list-item {
+  padding-inline-start: 16px !important;
+}
 .v-navigation-drawer__content::-webkit-scrollbar {
   width: 0;
 }

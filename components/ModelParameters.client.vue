@@ -52,7 +52,6 @@ onNuxtReady(() => {
           <v-btn 
             icon 
             v-bind="mergeProps(props, tooltip)"
-            :title="$t('usingKey')"
             class="apikey-btn toolbar-btn"
           >
             <span 
