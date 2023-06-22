@@ -158,6 +158,10 @@ const resetTitle = () => {
 
 
     <!-- appBar buttons -->
+    <ShareDialog 
+      :app-bar="appBar" 
+      :conversation="conversation"
+    />
     <v-btn
       v-if="appBar"  
       :title="$t('newConversation')"

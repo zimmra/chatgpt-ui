@@ -104,6 +104,10 @@ const props = defineProps({
   deleteMessage: {
     type: Function,
     required: true
+  },
+  editable: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -218,6 +222,7 @@ onMounted(() => {
     :style="`align-items: flex-${message.is_bot ? 'start' : 'end'};`"
   >
     <div
+      v-if="editable"
       class="chat-message-top-actions"
       :style="isMobile ? hoverStyle : ''"
     >
@@ -239,6 +244,7 @@ onMounted(() => {
       rounded="lg"
       elevation="2"
       style="max-width: 100%"
+      :style="editable ? '' : `margin-top: 24px`"
     >
       <div
         v-if="isMobile"

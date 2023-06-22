@@ -7,6 +7,7 @@ export const getDefaultConversationData = () => {
         mask_avatar: '',
         mask: [],
         messages: [],
+        shared: false,
         loadingMessages: false,
     }
 }
