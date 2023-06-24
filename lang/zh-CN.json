@@ -131,7 +131,7 @@
   "close": "关闭",
   "usingKey": "使用中的秘钥",
   "welcomeScreen": {
-    "introduction1": "是一个非官方的 ChatGPT 客户端，但使用 OpenAI 的官方 API",
+    "introduction1": "：您的私人AI助手",
     "introduction2": "在使用本客户端之前，您需要一个 OpenAI API 密钥。",
     "examples": {
       "title": "例子",

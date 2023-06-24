@@ -110,7 +110,7 @@ const navTitle = computed(() => {
   if (conversation.value && conversation.value.topic !== null) {
     return conversation.value.topic === '' ? $i18n.t('defaultConversationTitle') : conversation.value.topic
   }
-  return runtimeConfig.public.appName
+  return runtimeConfig.public.appName+$i18n.t('welcomeScreen.introduction1')
 })
 
 onActivated(async () => {

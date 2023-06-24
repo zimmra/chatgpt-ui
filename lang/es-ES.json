@@ -73,7 +73,7 @@
     "frugalModeShort": "Frugal",
     "frugalModeTip": "Activar el modo frugal, el cliente no enviará mensajes históricos a ChatGPT, lo que puede ahorrar consumo de tokens. Si desea que ChatGPT comprenda el contexto de la conversación, apague el modo frugal.",
     "welcomeScreen": {
-        "introduction1": "es un cliente no oficial para ChatGPT, pero utiliza la API oficial de OpenAI.",
+        "introduction1": ": Tu Asistente de IA Dedicado",
         "introduction2": "Necesitará una clave de API de OpenAI antes de poder usar este cliente.",
         "examples": {
             "title": "Ejemplos",

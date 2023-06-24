@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const appName = process.env.NUXT_PUBLIC_APP_NAME ?? 'ChatGPT UI'
+const appName = process.env.NUXT_PUBLIC_APP_NAME ?? 'ChatMate'
 export default defineNuxtConfig({
     debug: process.env.NODE_ENV !== 'production',
     ssr: process.env.SSR !== 'false',
@@ -79,6 +79,6 @@ export default defineNuxtConfig({
         ],
         lazy: true,
         langDir: 'lang',
-        defaultLocale: process.env.DEFAULT_LOCALE || 'en',
+        defaultLocale: process.env.DEFAULT_LOCALE || 'zh-CN',
     }
 })

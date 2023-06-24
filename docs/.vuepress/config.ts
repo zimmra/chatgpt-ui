@@ -7,7 +7,7 @@ import {
   } from './configs/index.js'
 
 export default defineUserConfig({
-  title: 'ChatGPT UI',
+  title: 'ChatMate',
   description: 'A ChatGPT web client',
   base: '/chatgpt-ui/',
   locales: {

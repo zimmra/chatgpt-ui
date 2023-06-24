@@ -114,7 +114,7 @@
   "close": "Close",
   "usingKey": "Using Key",
   "welcomeScreen": {
-    "introduction1": "is an unofficial client for ChatGPT, but uses the official OpenAI API.",
+    "introduction1": ": Your Dedicated AI Assistant",
     "introduction2": "You will need an OpenAI API Key before you can use this client.",
     "examples": {
       "title": "Examples",

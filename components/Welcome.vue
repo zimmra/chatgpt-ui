@@ -4,10 +4,10 @@
     <v-spacer></v-spacer>
     <div class="text-center mb-5">
       <h2 class="text-h4 text-md-h3 text-lg-h2" style="font-weight: bold;"><span class="text-primary">{{ runtimeConfig.public.appName }}</span></h2>
-      <!-- <p class="text-caption my-5">
+      <!--<p class="text-caption my-5">
         {{ runtimeConfig.public.appName }} {{ $t('welcomeScreen.introduction1') }}
         <br>
-      </p> -->
+      </p>-->
     </div>
     <v-spacer></v-spacer>
     <v-row class="d-flex flex-grow-0 pb-md-16">
