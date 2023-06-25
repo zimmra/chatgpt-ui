@@ -1,7 +1,7 @@
 <script setup>
 import {EventStreamContentType, fetchEventSource} from '@microsoft/fetch-event-source'
-import ChatGPTLogo from '@/assets/chatgpt.svg'
-
+import {computed } from 'vue';
+import ChatGPTLogo from '@/assets/gpt.svg'
 const user = useUser()
 const { isMobile } = useDevice();
 const { $i18n, $settings } = useNuxtApp()
@@ -245,6 +245,9 @@ const resetTitle = () => {
 onNuxtReady(() => {
   currentModel.value = getCurrentModel()
 })
+const bgColor = computed(() => {
+  return currentModel.value.name === 'gpt-4' ? 'rgb(27,27,27)' : 'rgb(25, 195, 125)';
+});
 
 </script>
 
@@ -267,7 +270,7 @@ onNuxtReady(() => {
           class="d-flex align-start"
           :class="message.is_bot ? 'justify-start' : 'justify-end'"
         >
-          <div v-if="message.is_bot && !isMobile" class="avatar-bot">
+          <div v-if="message.is_bot && !isMobile" class="avatar-bot" :style="{ backgroundColor: bgColor }">
             <img :src="ChatGPTLogo" alt="ChatGPT">
           </div>
           <MsgContent
@@ -434,7 +437,7 @@ onNuxtReady(() => {
   margin: 22px 10px 0 10px;
   padding: 8px 8px 2px 8px;
   border-radius: 10px;
-  background-color: rgb(25, 195, 125);
+  //background-color: rgb(25, 195, 125);
   transform: scale(0.7);
 }
 .avatar-user {
