@@ -46,7 +46,8 @@ const formRules = ref({
 const submitting = ref(false)
 const errorMsg = ref(null)
 const signUpForm = ref(null)
-
+const passwordInputType1 = ref('password')
+const passwordInputType2 = ref('password')
 const submit = async () => {
   errorMsg.value = null
   const { valid } = await signUpForm.value.validate()
@@ -139,6 +140,9 @@ const handleFieldUpdate = (field) => {
                     variant="underlined"
                     @update:modelValue="handleFieldUpdate('password1')"
                     clearable
+                    :type="passwordInputType1"
+                    :append-inner-icon="passwordInputType1 === 'password' ? 'visibility' : 'visibility_off'"
+                    @click:append-inner="passwordInputType1 = passwordInputType1 === 'password' ? 'text' : 'password'"
                 ></v-text-field>
 
                 <v-text-field
@@ -149,6 +153,9 @@ const handleFieldUpdate = (field) => {
                     variant="underlined"
                     @update:modelValue="handleFieldUpdate('password2')"
                     clearable
+                    :type="passwordInputType2"
+                    :append-inner-icon="passwordInputType2 === 'password' ? 'visibility' : 'visibility_off'"
+                    @click:append-inner="passwordInputType2 = passwordInputType2 === 'password' ? 'text' : 'password'"
                 ></v-text-field>
 
                <v-text-field
