@@ -163,7 +163,7 @@ defineExpose({
         @click:append-inner="clickSendBtn"
       ></v-textarea>
       <div class="text-under-textarea">
-        <span>Free Research Preview. Powered by OpenAI. Sponsored by the <a href="https://zjuvag.org/" target="_blank" rel="noreferrer" class="underline">Visual Analytics and Intelligence</a> group of CAD&CG, Zhejiang University.</span>
+        <span>Free Research Preview. Powered by OpenAI. Sponsored by the <a href="https://zjuvag.org/" target="_blank" rel="noreferrer" class="underline">VAI</a> Group, State Key Lab of CAD&CG, Zhejiang University.</span>
       </div>
     </div>
   </div>
