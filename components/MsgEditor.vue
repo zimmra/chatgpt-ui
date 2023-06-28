@@ -143,10 +143,9 @@ defineExpose({
 </script>
 
 <template>
-  <div
-      class="flex-grow-1 d-flex align-center justify-space-between"
-  >
-    <v-textarea
+  <div class="flex-grow-1 d-flex align-center justify-space-between">
+    <div class="input-wrapper">
+      <v-textarea
         ref="textArea"
         v-model="message"
         :placeholder="hint"
@@ -162,13 +161,27 @@ defineExpose({
         append-inner-icon="fa:fa-solid fa-paper-plane"
         @keydown.enter.exact="enterOnly"
         @click:append-inner="clickSendBtn"
-    ></v-textarea>
-    <!-- <v-btn
-        :disabled="loading"
-        icon="fa:fa-solid fa-paper-plane"
-        title="Send"
-        class="ml-3 pr-1"
-        @click="clickSendBtn"
-    ></v-btn> -->
+      ></v-textarea>
+      <div class="text-under-textarea">
+        <span>Free Research Preview. Powered by OpenAI. Sponsored by the <a href="https://zjuvag.org/" target="_blank" rel="noreferrer" class="underline">Visual Analytics and Intelligence</a> group of CAD&CG, Zhejiang University.</span>
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.input-wrapper {
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+  width: 100%;
+}
+
+.text-under-textarea {
+  text-align: center;
+  padding: 0 1rem 0 1rem; /* top, right, bottom, left */
+  margin-top: 4px;
+  font-size: 10px;
+  margin-bottom: 0px;
+}
+</style>
