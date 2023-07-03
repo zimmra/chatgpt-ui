@@ -1,5 +1,6 @@
 <script setup>
 import ChatGPTLogo from '@/assets/chatgpt.svg'
+import html2canvas from 'html2canvas'
 
 const props = defineProps({
   appBar: {
@@ -22,6 +23,42 @@ const getDate = () => {
   return now.toLocaleDateString('en-US')
 }
 
+const shareAsImage = () => {
+  const element = document.getElementById('divToShare')
+  // 复制一份, 用于修改样式
+  var copyDOM = element.cloneNode(true)
+  // 删除 box-shadow, html2canvas 不支持 box-shadow
+  copyDOM.classList.remove("share-window-shadow")
+  // 删除 share-panel, 使得可以截取全部内容, 避免受滚动条影响
+  var divToScroll = copyDOM.querySelector('#divToScroll')
+  divToScroll.classList.remove("share-panel")
+  // 删除匿名按钮
+  var btnElement = copyDOM.querySelector("#hideUserNameID")
+  if (btnElement) {
+    btnElement.parentNode.removeChild(btnElement)
+    var infoElement = copyDOM.querySelector(".share-info")
+    infoElement.style.setProperty("margin-bottom", "10px")
+  }
+  // 把 copyDOM 添加到 document 中
+  document.querySelector("body").appendChild(copyDOM)
+ 
+  html2canvas(copyDOM, {
+    allowTaint: true,
+    useCORS: true,
+    width: element.clientWidth - 50,
+    windowWidth: element.clientWidth,
+  }).then((canvas) => {
+    const imageDataURL = canvas.toDataURL("image/png")
+    const link = document.createElement('a')
+    link.href = imageDataURL
+    link.download = 'share_conversation.png' // 指定下载文件名
+    // 模拟点击链接进行下载  
+    link.click()
+    // 从 document 中删除 copyDOM
+    copyDOM.remove()
+  })
+}
+
 </script>
 
 <template>
@@ -29,7 +66,7 @@ const getDate = () => {
     v-if="appBar"
     v-model="dialog"
     persistent
-    max-width="768"
+    class="dialog-width"
   >
     <template v-slot:activator="{ props }">
       <v-btn
@@ -52,8 +89,25 @@ const getDate = () => {
       </v-toolbar>
       <v-card-text v-show="!conversation.shared">{{ $t("shareTips1") }}</v-card-text>
       <v-card-text v-show="conversation.shared">{{ $t("shareTips2") }}</v-card-text>
-      <div class="share-window">
-        <div
+      <div id="divToShare" class="share-window share-window-shadow">
+        <div class="share-option">
+          <div class="share-topic">{{ conversation.topic }}</div>
+          <div class="share-info">
+            <span v-if="!hideUserName" class="mr-2">{{ user.username }} · </span>
+            <span>{{ getDate() }}</span>
+            <v-spacer></v-spacer>
+            <div id="hideUserNameID" class="d-flex align-center">
+              <v-switch
+                v-model="hideUserName"
+                inline
+                color="primary"
+                hide-details=""
+              ></v-switch>
+              <span class="ml-3">{{ $t('showUserName') }}</span>
+            </div>
+          </div>
+        </div>
+        <div id="divToScroll"
           class="d-flex flex-column justify-space-between share-panel"
           style="width: 100%;"
         >
@@ -69,9 +123,9 @@ const getDate = () => {
               <MsgContent
                 :message="message"
                 :message-index="index"
-                :use-prompt="usePrompt"
-                :retry-message="retryMessage"
-                :delete-message="deleteMessage"
+                :use-prompt="() => {}"
+                :retry-message="() => {}"
+                :delete-message="() => {}"
                 :style="`max-width: ${isMobile ? '95%' : '75%'};`"
                 :editable="false"
               />
@@ -81,40 +135,46 @@ const getDate = () => {
             </div>
           </div>
         </div>
-        <div class="share-option">
-          <div class="share-topic">{{ conversation.topic }}</div>
-          <div class="share-info">
-            <span v-if="!hideUserName" class="mr-2">{{ user.username }} · </span>
-            <span>{{ getDate() }}</span>
-            <v-spacer></v-spacer>
-            <div class="d-flex align-center">
-              <v-switch
-                v-model="hideUserName"
-                inline
-                color="primary"
-                hide-details=""
-              ></v-switch>
-              <span class="ml-3">{{ $t('showUserName') }}</span>
-            </div>
-          </div>
-        </div>
       </div>
-      <v-card-action class="d-flex justify-end mr-4 mb-3">
+      <v-card-actions class="d-flex justify-end mr-4 mb-3">
         <v-btn
           prepend-icon="fa:fa-solid fa-link"
           variant="outlined"
+          @click="shareAsImage"
         >{{ $t('share') }}</v-btn>
-      </v-card-action>
+      </v-card-actions>
       
     </v-card>
   </v-dialog>
 </template>
 
 <style scoped>
+@media screen and (max-width: 380px) {
+  .dialog-width {
+    max-width: 350px;
+  }
+} 
+@media screen and (min-width: 381px) {
+  .dialog-width {
+    max-width: 768px;
+  }
+} 
+@media screen and (min-width: 769px) {
+  .dialog-width {
+    max-width: 1024px;
+  }
+}
+@media screen and (min-width: 1025px) {
+  .dialog-width {
+    max-width: 1280px;
+  }
+}
 .share-window {
   border-radius: 10px;
   border: 1px solid rgba(161, 158, 158, 0.5);
   margin: 10px 25px 20px 25px;
+}
+.share-window-shadow {
   box-shadow: 0 0 5px rgba(170, 189, 181, 0.305);
 }
 .share-panel {
@@ -124,7 +184,7 @@ const getDate = () => {
 }
 .share-option {
   font-size: 1.1rem;
-  border-top: 1px solid rgba(161, 158, 158, 0.5);
+  border-bottom: 1px solid rgba(161, 158, 158, 0.5);
   padding: 15px 30px 0 30px;
 }
 .share-topic {

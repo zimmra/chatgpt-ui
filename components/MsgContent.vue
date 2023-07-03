@@ -30,7 +30,7 @@ const md = new MarkdownIt({
   }
 
   // Add line numbers with class name `line-number8ebx`
-  highlightedCode = lines.map((line, i) => `<span style="display: inline-block; width: 2em; text-align: right; padding-right: 1em; color: #ccc;" class="line-number8ebx">${i + 1}</span>${line}`).join('\n');
+  highlightedCode = lines.map((line, i) => `<span style="display: inline-block; width: 2em; text-align: right; padding-right: 1em; color: #aaa;" class="line-number8ebx">${i + 1}</span>${line}`).join('\n');
 
   return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${highlightedCode}</code></pre>`
 },
@@ -240,11 +240,11 @@ onMounted(() => {
       </div>
     </div>
     <v-card
-      :color="message.is_bot ? '' : 'primary'"
+      :color="message.is_bot ? 'secondary' : 'primary'"
       rounded="lg"
       elevation="2"
-      style="max-width: 100%"
-      :style="editable ? '' : `margin-top: 24px`"
+      style="max-width: 100%; box-shadow: none !important;"
+      :style="editable ? '' : `margin-top: 24px;`"
     >
       <div
         v-if="isMobile"
@@ -349,10 +349,18 @@ onMounted(() => {
 .chat-msg-content ol, .chat-msg-content ul {
   padding-left: 2em;
 }
+.hljs {
+  overflow-x: unset !important;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.hljs .line-number8ebx {
+  white-space: nowrap !important;
+}
 .hljs-code-container {
   width: 100%;
   border-radius: 3px;
-  overflow: auto;
+  /* overflow: auto; */
 }
 .hljs-copy-button{
   width:2rem;height:2rem;text-indent:-9999px;color:#fff;
