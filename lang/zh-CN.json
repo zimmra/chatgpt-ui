@@ -63,6 +63,7 @@
   "showUserName": "匿名共享",
   "shareTips1": "创建链接后发送的信息不会被共享. 任何拥有链接的人都可以查看共享的聊天内容.",
   "shareTips2": "你之前分享过这个聊天记录. 如果你想要更新分享的聊天内容, 请删除此链接并创建一个新的分享链接.",
+  "shareTips3": "通过图片给他人共享聊天内容",
   "defaultConversationTitle": "未命名",
   "clearConversations": "清除对话",
   "modelParameters": "模型参数",

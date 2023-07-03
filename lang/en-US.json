@@ -46,6 +46,7 @@
   "showUserName": "Hide your name",
   "shareTips1": "Messages you send after creating your link won't be shared. Anyone with the URL will be able to view the shared chat.",
   "shareTips2": "You have shared this chat before. If you want to update the shared chat content, delete this link and create a new shared link.",
+  "shareTips3": "Share chat with others by images.",
   "defaultConversationTitle": "Unnamed",
   "clearConversations": "Clear conversations",
   "modelParameters": "Model Parameters",

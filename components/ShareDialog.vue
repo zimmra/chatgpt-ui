@@ -87,8 +87,8 @@ const shareAsImage = () => {
           @click="dialog = false"
         ></v-btn>
       </v-toolbar>
-      <v-card-text v-show="!conversation.shared">{{ $t("shareTips1") }}</v-card-text>
-      <v-card-text v-show="conversation.shared">{{ $t("shareTips2") }}</v-card-text>
+      <v-card-text v-show="!conversation.shared">{{ $t("shareTips3") }}</v-card-text>
+      <!-- <v-card-text v-show="conversation.shared">{{ $t("shareTips2") }}</v-card-text> -->
       <div id="divToShare" class="share-window share-window-shadow">
         <div class="share-option">
           <div class="share-topic">{{ conversation.topic }}</div>
@@ -138,7 +138,7 @@ const shareAsImage = () => {
       </div>
       <v-card-actions class="d-flex justify-end mr-4 mb-3">
         <v-btn
-          prepend-icon="fa:fa-solid fa-link"
+          prepend-icon="fa:fa-solid fa-download"
           variant="outlined"
           @click="shareAsImage"
         >{{ $t('share') }}</v-btn>
