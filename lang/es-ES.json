@@ -3,7 +3,7 @@
     "signUp": "Registrarse",
     "username": "Nombre de usuario",
     "password": "Contraseña",
-    "Username is required": "Se requiere nombre de usuario",
+    "Username or Email is required": "Se requiere nombre de usuario",
     "Password is required": "Se requiere contraseña",
     "Create your account": "Cree su cuenta",
     "createAccount": "Crear cuenta",

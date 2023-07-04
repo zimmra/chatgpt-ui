@@ -21,7 +21,7 @@
                 <v-text-field
                     v-model="formData.username"
                     :rules="formRules.username"
-                    :label="$t('username')"
+                    :label="$t('username_email')"
                     variant="underlined"
                     clearable
                 ></v-text-field>
@@ -78,7 +78,7 @@ const formData = ref({
 })
 const formRules = ref({
   username: [
-      v => !!v || $i18n.t('Username is required')
+      v => !!v || $i18n.t('Username or Email is required')
   ],
   password: [
       v => !!v || $i18n.t('Password is required')

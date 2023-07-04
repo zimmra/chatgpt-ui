@@ -3,7 +3,7 @@
   "signUp":"S'inscrire",
   "username":"Nom d'utilisateur",
   "password":"Mot de passe",
-  "Username is required":"Nom d'utilisateur requis",
+  "Username or Email is required":"Nom d'utilisateur requis",
   "Password is required":"Mot de passe requis",
   "Create your account":"Créer votre compte",
   "createAccount":"Créer un compte",
