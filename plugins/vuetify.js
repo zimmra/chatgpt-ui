@@ -19,6 +19,7 @@ export default defineNuxtPlugin(nuxtApp => {
             }
         },
         components,
+        // config theme
         // theme: {
         //     themes: {
         //         dark: {

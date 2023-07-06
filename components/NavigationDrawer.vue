@@ -1,21 +1,21 @@
 <script setup>
-import { useDisplay } from 'vuetify'
-import { useDrawer } from "../composables/states";
+import {useDisplay} from 'vuetify'
+import {useDrawer} from "../composables/states";
 import ShareDialog from './ShareDialog.vue';
 
 const route = useRoute()
-const { $i18n, $settings } = useNuxtApp()
+const {$i18n, $settings} = useNuxtApp()
 const colorMode = useColorMode()
-const { mdAndUp } = useDisplay()
+const {mdAndUp} = useDisplay()
 const drawerPermanent = computed(() => {
   return mdAndUp.value
 })
 const user = useUser()
 
 const themes = ref([
-  { title: $i18n.t('lightMode'), value: 'light' },
-  { title: $i18n.t('darkMode'), value: 'dark' },
-  { title: $i18n.t('followSystem'), value: 'system' }
+  {title: $i18n.t('lightMode'), value: 'light'},
+  {title: $i18n.t('darkMode'), value: 'dark'},
+  {title: $i18n.t('followSystem'), value: 'system'}
 ])
 const setTheme = (theme) => {
   colorMode.preference = theme
@@ -25,7 +25,7 @@ const feedback = () => {
   window.open('https://github.com/Jarvis73/chatgpt-ui/issues', '_blank')
 }
 
-const { locale, locales, setLocale } = useI18n()
+const {locale, locales, setLocale} = useI18n()
 const setLang = (lang) => {
   setLocale(lang)
 }
@@ -46,10 +46,10 @@ const groupedConversations = computed(() => {
       // 今天
       const today = now.getDate()
       switch (itemDate.getDate()) {
-        case today: 
-          defaultAppend(result, `${$i18n.t('today')}`, item)          
+        case today:
+          defaultAppend(result, `${$i18n.t('today')}`, item)
           break
-        case today - 1: 
+        case today - 1:
           defaultAppend(result, `${$i18n.t('yesterday')}`, item)
           break
         case today - 2:
@@ -63,8 +63,7 @@ const groupedConversations = computed(() => {
           defaultAppend(result, `${$i18n.t('monthTip1')}${$i18n.t(`month.${itemDate.getMonth()}`)}${$i18n.t('monthTip2')}`, item)
           break;
       }
-    }
-    else {
+    } else {
       defaultAppend(result, `${itemDate.getFullYear()}${$i18n.t('yearTip')}${$i18n.t(`month.${itemDate.getMonth()}`)} ${$i18n.t('yearTip') === '' ? itemDate.getFullYear() : ''}`, item)
     }
     return result
@@ -84,7 +83,7 @@ const editConversation = (items, index) => {
 
 const updateConversation = async (items, index) => {
   editingConversation.value.updating = true
-  const { data, error } = await useAuthFetch(`/api/chat/conversations/${editingConversation.value.id}/`, {
+  const {data, error} = await useAuthFetch(`/api/chat/conversations/${editingConversation.value.id}/`, {
     method: 'PUT',
     body: JSON.stringify({
       topic: editingConversation.value.topic
@@ -98,7 +97,7 @@ const updateConversation = async (items, index) => {
 
 const deleteConversation = async (items, index) => {
   deletingConversationIndex.value = index
-  const { data, error } = await useAuthFetch(`/api/chat/conversations/${items[index].id}/`, {
+  const {data, error} = await useAuthFetch(`/api/chat/conversations/${items[index].id}/`, {
     method: 'DELETE'
   })
   deletingConversationIndex.value = null
@@ -113,7 +112,7 @@ const deleteConversation = async (items, index) => {
 
 const clearConversations = async () => {
   deletingConversations.value = true
-  const { data, error } = await useAuthFetch(`/api/chat/conversations/delete_all`, {
+  const {data, error} = await useAuthFetch(`/api/chat/conversations/delete_all`, {
     method: 'DELETE'
   })
   if (!error.value) {
@@ -134,7 +133,7 @@ const loadConversations = async () => {
 }
 
 const signOut = async () => {
-  const { data, error } = await useFetch('/api/account/logout/', {
+  const {data, error} = await useFetch('/api/account/logout/', {
     method: 'POST'
   })
   if (!error.value) {
@@ -154,9 +153,14 @@ const drawer = useDrawer()
   <v-navigation-drawer v-model="drawer" :permanent="drawerPermanent" width="300">
     <template v-slot:prepend v-if="user">
       <v-list>
-        <v-list-item :title="user.username" :subtitle="user.email">
+        <v-list-item :subtitle="user.email">
+          <template v-slot:title>
+            <span class="font-weight-bold-chinese">{{ user.username }}</span>
+          </template>
           <template v-slot:prepend>
-            <v-icon icon="face" size="x-large"></v-icon>
+            <div class="avatar-user">
+              <div class="avatar-text">{{ user.username.substring(0, 1).toUpperCase() }}</div>
+            </div>
           </template>
           <template v-slot:append>
             <v-menu>
@@ -191,50 +195,55 @@ const drawer = useDrawer()
         <template v-for="(items, date) in groupedConversations" :key="date">
           <v-list-group :value="date">
             <template v-slot:activator="{ props }">
-              <v-list-item 
-                v-bind="props" 
-                class="d-flex align-center justify-space-between date-span"
-                :ripple="false"
-                style="cursor: default;"
+              <v-list-item
+                  v-bind="props"
+                  class="d-flex align-center justify-space-between date-span"
+                  :ripple="false"
+                  style="cursor: default;"
               ><span>{{ date }}</span></v-list-item>
             </template>
             <template v-for="(conversation, cIdx) in items" :key="conversation.id">
               <v-list-item color="primary" rounded="xl"
-                v-if="editingConversation && editingConversation.id === conversation.id"
+                           v-if="editingConversation && editingConversation.id === conversation.id"
               >
                 <div class="d-flex flex-row align-center">
-                  <v-text-field 
-                    v-model="editingConversation.topic" 
-                    :loading="editingConversation.updating"
-                    variant="solo"
-                    hide-details 
-                    density="compact" 
-                    autofocus 
-                    @keyup.enter="updateConversation(items, cIdx)"
-                    class="flex-grow-1"
+                  <v-text-field
+                      v-model="editingConversation.topic"
+                      :loading="editingConversation.updating"
+                      variant="solo"
+                      hide-details
+                      density="compact"
+                      autofocus
+                      @keyup.enter="updateConversation(items, cIdx)"
+                      class="flex-grow-1"
                   ></v-text-field>
-                  <v-btn 
-                    icon="done" density="compact" variant="text"
-                    @click="updateConversation(items, cIdx)"
-                    class="ml-3 mr-3"
+                  <v-btn
+                      icon="done" density="compact" variant="text"
+                      @click="updateConversation(items, cIdx)"
+                      class="ml-3 mr-3"
                   ></v-btn>
-                  <v-btn 
-                    icon="close" density="compact" variant="text"
-                    @click="editingConversation = null"
-                    class="mr-2"
+                  <v-btn
+                      icon="close" density="compact" variant="text"
+                      @click="editingConversation = null"
+                      class="mr-2"
                   ></v-btn>
                 </div>
               </v-list-item>
               <v-hover v-if="!editingConversation || editingConversation.id !== conversation.id"
-                v-slot="{ isHovering, props }">
+                       v-slot="{ isHovering, props }">
                 <v-list-item rounded="lg" color="primary" :to="conversation.id ? `/${conversation.id}` : '/'"
-                  v-bind="props" class="ml-3">
-                  <v-list-item-title class="pl-1">{{ (conversation.topic && conversation.topic !== '') ? conversation.topic :
-                    $t('defaultConversationTitle') }}</v-list-item-title>
+                             v-bind="props" class="ml-3">
+                  <v-list-item-title class="pl-1">{{
+                      (conversation.topic && conversation.topic !== '') ? conversation.topic :
+                          $t('defaultConversationTitle')
+                    }}
+                  </v-list-item-title>
                   <template v-slot:append>
                     <div v-show="isHovering && conversation.id">
-                      <v-btn icon="edit" size="small" variant="text" @click.prevent="editConversation(items, cIdx)"></v-btn>
-                      <v-btn icon="delete" size="small" variant="text" :loading="deletingConversationIndex === cIdx" @click.prevent="deleteConversation(items, cIdx)"></v-btn>
+                      <v-btn icon="edit" size="small" variant="text"
+                             @click.prevent="editConversation(items, cIdx)"></v-btn>
+                      <v-btn icon="delete" size="small" variant="text" :loading="deletingConversationIndex === cIdx"
+                             @click.prevent="deleteConversation(items, cIdx)"></v-btn>
                     </div>
                   </template>
                 </v-list-item>
@@ -249,7 +258,8 @@ const drawer = useDrawer()
       <v-expansion-panels style="flex-direction: column;">
         <v-expansion-panel rounded="rounded-pill">
           <v-expansion-panel-title expand-icon="add" collapse-icon="close">
-            <v-icon icon="settings" class="mr-4"></v-icon> {{ $t("settingDraw") }}
+            <v-icon icon="settings" class="mr-4"></v-icon>
+            {{ $t("settingDraw") }}
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <div class="px-1">
@@ -259,7 +269,7 @@ const drawer = useDrawer()
                 <v-dialog v-model="clearConfirmDialog" persistent max-width="768">
                   <template v-slot:activator="{ props }">
                     <v-list-item v-bind="props" rounded="xl" prepend-icon="delete_forever"
-                      :title="$t('clearConversations')"></v-list-item>
+                                 :title="$t('clearConversations')"></v-list-item>
                   </template>
                   <v-card>
                     <v-card-title class="text-h5">
@@ -270,18 +280,19 @@ const drawer = useDrawer()
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="green-darken-1" variant="text" @click="clearConfirmDialog = false" class="text-none">
+                      <v-btn color="green-darken-1" variant="text" @click="clearConfirmDialog = false"
+                             class="text-none">
                         {{ $i18n.t('Cancel deletion') }}
                       </v-btn>
                       <v-btn color="green-darken-1" variant="text" @click="clearConversations" class="text-none"
-                        :loading="deletingConversations">
+                             :loading="deletingConversations">
                         {{ $i18n.t('Confirm deletion') }}
                       </v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
 
-                <ApiKeyDialog v-if="$settings.open_api_key_setting === 'True'" />
+                <ApiKeyDialog v-if="$settings.open_api_key_setting === 'True'"/>
 
                 <v-menu>
                   <template v-slot:activator="{ props }">
@@ -293,21 +304,21 @@ const drawer = useDrawer()
                     </v-list-item>
                   </template>
                   <v-list>
-                    <v-list-item 
-                      v-for="(theme, idx) in themes" 
-                      @click="setTheme(theme.value)"
-                      :key="idx" 
-                      :active="theme.value === $colorMode.value"
+                    <v-list-item
+                        v-for="(theme, idx) in themes"
+                        @click="setTheme(theme.value)"
+                        :key="idx"
+                        :active="theme.value === $colorMode.value"
                     >
                       <v-list-item-title>{{ theme.title }}</v-list-item-title>
                     </v-list-item>
                   </v-list>
                 </v-menu>
 
-                <SettingsLanguages />
+                <SettingsLanguages/>
 
                 <v-list-item rounded="xl" prepend-icon="help_outline" :title="$t('feedback')"
-                  @click="feedback"></v-list-item>
+                             @click="feedback"></v-list-item>
 
               </v-list>
             </div>
@@ -331,6 +342,7 @@ const drawer = useDrawer()
 .v-list-group__items .v-list-item {
   padding-inline-start: 16px !important;
 }
+
 .v-navigation-drawer__content::-webkit-scrollbar {
   width: 0;
 }
@@ -343,4 +355,27 @@ const drawer = useDrawer()
   background-color: #999;
   border-radius: 3px;
 }
+
+.avatar-user {
+  margin: 0 10px 0 10px;
+  border-radius: 10px;
+  background-color: rgb(178, 207, 130);
+  transform: scale(0.8);
+}
+
+.avatar-text {
+  width: 51px;
+  height: 51px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.font-weight-bold-chinese {
+  font-weight: bold;
+  font-family: "微软雅黑", "Microsoft YaHei", "宋体", "SimSun", sans-serif;
+}
+
 </style>
