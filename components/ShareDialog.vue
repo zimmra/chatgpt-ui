@@ -1,5 +1,5 @@
 <script setup>
-import ChatGPTLogo from '@/assets/chatgpt.svg'
+import ChatGPTLogo from '@/assets/gpt.svg'
 import html2canvas from 'html2canvas'
 
 const props = defineProps({
