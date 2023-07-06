@@ -239,8 +239,7 @@ onMounted(() => {
       </div>
     </div>
   <v-card
-    :color="message.is_bot ? 'secondary' : 'primary'"
-    :style="`background-color: ${message.is_bot ? '' : '#fffaf0'}; color: ${message.is_bot ? '' : 'black'}; max-width: 100%; box-shadow: none !important; ${editable ? '' : 'margin-top: 24px;'}`"
+    :style="`background-color: ${message.is_bot ? '' : '#fffaf0'}; color: ${message.is_bot ? '' : 'black'};max-width: 100%;box-shadow: none !important; ${editable ? '' : 'margin-top: 24px;'}`"
     rounded="lg"
     elevation="2"
   >

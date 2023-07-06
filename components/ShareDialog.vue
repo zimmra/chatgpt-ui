@@ -1,7 +1,7 @@
 <script setup>
 import ChatGPTLogo from '@/assets/gpt.svg'
 import html2canvas from 'html2canvas'
-
+const currentModel = useCurrentModel()
 const props = defineProps({
   appBar: {
     type: Boolean,
@@ -17,7 +17,13 @@ const { isMobile } = useDevice();
 const user = useUser()
 const dialog = ref(false)
 const hideUserName = ref(true)
-
+onNuxtReady(() => {
+  currentModel.value = getCurrentModel()
+})
+const bgColor = computed(() => {
+  // return currentModel.value.name === 'gpt-4' ? 'rgb(27,27,27)' : 'rgb(25, 195, 125)';
+  return currentModel.value.name === 'gpt-4' ? 'rgb(56, 35, 91)' : 'rgb(170,144,212)';
+});
 const getDate = () => {
   const now = new Date()
   return now.toLocaleDateString('en-US')
@@ -117,9 +123,9 @@ const shareAsImage = () => {
               class="d-flex align-start"
               :class="message.is_bot ? 'justify-start' : 'justify-end'"
             >
-              <div v-if="message.is_bot && !isMobile" class="avatar-bot">
-                <img :src="ChatGPTLogo" alt="ChatGPT">
-              </div>
+            <div v-if="message.is_bot && !isMobile" class="avatar-bot" :style="{ backgroundColor: bgColor }">
+              <img :src="ChatGPTLogo" alt="ChatGPT">
+            </div>
               <MsgContent
                 :message="message"
                 :message-index="index"
@@ -206,7 +212,7 @@ const shareAsImage = () => {
 .avatar-user {
   margin: 26px 10px 0 10px;
   border-radius: 10px;
-  background-color: rgb(100, 130, 45);
+  background-color: rgb(178, 207, 130);
   transform: scale(0.8);
 }
 .avatar-text {

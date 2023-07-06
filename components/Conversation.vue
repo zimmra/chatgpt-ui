@@ -443,7 +443,7 @@ const bgColor = computed(() => {
 .avatar-user {
   margin: 26px 10px 0 10px;
   border-radius: 10px;
-  background-color: rgb(100, 130, 45);
+  background-color: rgb(178, 207, 130);
   transform: scale(0.8);
 }
 .avatar-text {
