@@ -261,7 +261,6 @@ const bgColor = computed(() => {
       ></v-progress-circular>
     </div>
     <div v-else-if="conversation.messages.length > 0" 
-      ref="chatWindow"
       class="d-flex flex-column justify-space-between main-content"
       style="width: 100%;"
     >
@@ -444,7 +443,7 @@ const bgColor = computed(() => {
 .avatar-user {
   margin: 26px 10px 0 10px;
   border-radius: 10px;
-  background-color: rgb(0, 62, 155);
+  background-color: rgb(100, 130, 45);
   transform: scale(0.8);
 }
 .avatar-text {

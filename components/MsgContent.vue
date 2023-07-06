@@ -28,7 +28,6 @@ const md = new MarkdownIt({
     if (lines[lines.length - 1] === '') {
       lines.pop();
     }
-
     // Add line numbers with class name `line-number8ebx`
     highlightedCode = lines.map((line, i) => `<span style="display: inline-block; width: 2em; text-align: right; padding-right: 1em; color: #ccc;" class="line-number8ebx">${i + 1}</span>${line}`).join('\n');
 
@@ -105,6 +104,10 @@ const props = defineProps({
   deleteMessage: {
     type: Function,
     required: true
+  },
+  editable: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -218,8 +221,9 @@ onMounted(() => {
       :style="`align-items: flex-${message.is_bot ? 'start' : 'end'};`"
   >
     <div
-        class="chat-message-top-actions"
-        :style="isMobile ? hoverStyle : ''"
+      v-if="editable"
+      class="chat-message-top-actions"
+      :style="isMobile ? hoverStyle : ''"
     >
       <div class="chat-message-top-action" @click="deleteMessage">
         {{ $i18n.t('delete') }}
@@ -234,17 +238,12 @@ onMounted(() => {
         {{ $i18n.t('copy') }}
       </div>
     </div>
-    <!--    <v-card-->
-    <!--      :color="message.is_bot ? '' : 'primary'"-->
-    <!--      rounded="lg"-->
-    <!--      elevation="2"-->
-    <!--      style="max-width: 100%"-->
-    <!--    >-->
-    <v-card
-        :style="`background-color: ${message.is_bot ? '' : '#fffaf0'}; color: ${message.is_bot ? '' : 'black'};max-width: 100%;`"
-        rounded="lg"
-        elevation="2"
-    >
+  <v-card
+    :color="message.is_bot ? 'secondary' : 'primary'"
+    :style="`background-color: ${message.is_bot ? '' : '#fffaf0'}; color: ${message.is_bot ? '' : 'black'}; max-width: 100%; box-shadow: none !important; ${editable ? '' : 'margin-top: 24px;'}`"
+    rounded="lg"
+    elevation="2"
+  >
       <div
           v-if="isMobile"
           ref="contentElm"
@@ -360,14 +359,16 @@ onMounted(() => {
   padding-left: 2em;
 }
 
+.hljs {
+  overflow-x: unset !important;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
 .hljs-code-container {
   width: 100%;
   border-radius: 3px;
-  overflow: auto;
-  overflow-x: hidden;
-  white-space: pre-wrap;
-  word-wrap: break-word;
 }
+
 
 .hljs-copy-button {
   width: 2rem;
@@ -385,6 +386,7 @@ onMounted(() => {
 .hljs-copy-button:hover {
   border-color: #ffffff44
 }
+
 
 .hljs-copy-button:active {
   border-color: #ffffff66

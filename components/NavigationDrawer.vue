@@ -1,6 +1,7 @@
 <script setup>
 import { useDisplay } from 'vuetify'
 import { useDrawer } from "../composables/states";
+import ShareDialog from './ShareDialog.vue';
 
 const route = useRoute()
 const { $i18n, $settings } = useNuxtApp()
@@ -212,17 +213,17 @@ const drawer = useDrawer()
                     @keyup.enter="updateConversation(items, cIdx)"
                     class="flex-grow-1"
                   ></v-text-field>
-                <v-btn 
-                  icon="done" density="compact" color="transparent"
-                  @click="updateConversation(items, cIdx)"
-                  class="mr-3"
-                ></v-btn>
-                <v-btn 
-                  icon="close" density="compact" color="transparent"
-                  @click="editingConversation = null"
-                  class="mr-2"
-                ></v-btn>
-              </div>
+                  <v-btn 
+                    icon="done" density="compact" variant="text"
+                    @click="updateConversation(items, cIdx)"
+                    class="ml-3 mr-3"
+                  ></v-btn>
+                  <v-btn 
+                    icon="close" density="compact" variant="text"
+                    @click="editingConversation = null"
+                    class="mr-2"
+                  ></v-btn>
+                </div>
               </v-list-item>
               <v-hover v-if="!editingConversation || editingConversation.id !== conversation.id"
                 v-slot="{ isHovering, props }">
@@ -232,11 +233,8 @@ const drawer = useDrawer()
                     $t('defaultConversationTitle') }}</v-list-item-title>
                   <template v-slot:append>
                     <div v-show="isHovering && conversation.id">
-                      <v-btn icon="edit" size="small" variant="text" @click.prevent="editConversation(items, cIdx)">
-                      </v-btn>
-                      <v-btn icon="delete" size="small" variant="text" :loading="deletingConversationIndex === cIdx"
-                        @click.prevent="deleteConversation(items, cIdx)">
-                      </v-btn>
+                      <v-btn icon="edit" size="small" variant="text" @click.prevent="editConversation(items, cIdx)"></v-btn>
+                      <v-btn icon="delete" size="small" variant="text" :loading="deletingConversationIndex === cIdx" @click.prevent="deleteConversation(items, cIdx)"></v-btn>
                     </div>
                   </template>
                 </v-list-item>
