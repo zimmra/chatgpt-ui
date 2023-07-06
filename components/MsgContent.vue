@@ -364,6 +364,9 @@ onMounted(() => {
   width: 100%;
   border-radius: 3px;
   overflow: auto;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .hljs-copy-button {
