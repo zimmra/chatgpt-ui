@@ -363,6 +363,7 @@ onMounted(() => {
 .hljs {
   overflow-x: unset !important;
   word-wrap: break-word;
+  word-break: break-all;
   white-space: pre-wrap;
 }
 .hljs-code-container {
@@ -370,6 +371,14 @@ onMounted(() => {
   border-radius: 3px;
 }
 
+.line-number8ebx {
+    user-select: none;
+    display: inline-block;
+    text-align: right;
+    padding-right: 1em;
+    color: #ccc;
+    white-space: nowrap;
+}
 
 .hljs-copy-button {
   width: 2rem;
