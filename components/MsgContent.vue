@@ -29,8 +29,10 @@ const md = new MarkdownIt({
       lines.pop();
     }
     // Add line numbers with class name `line-number8ebx`
-    highlightedCode = lines.map((line, i) => `<span style="display: inline-block; width: 2em; text-align: right; padding-right: 1em; color: #ccc;" class="line-number8ebx">${i + 1}</span>${line}`).join('\n');
-
+    // highlightedCode = lines.map((line, i) => `<span style="display: inline-block; width: 2em; text-align: right; padding-right: 1em; color: #ccc; white-space: nowrap;" class="line-number8ebx">${i + 1}</span>${line}`).join('\n');
+    const minWidth = Math.max(2, String(lines.length).length) + "em";
+    // Add line numbers with class name `line-number8ebx`
+    highlightedCode = lines.map((line, i) => `<span style="display: inline-block; width: ${minWidth}; text-align: right; padding-right: 1em; color: #ccc;" class="line-number8ebx">${i + 1}</span>${line}`).join('\n');
     return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${highlightedCode}</code></pre>`
   },
 })
