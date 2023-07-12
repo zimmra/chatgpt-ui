@@ -1,10 +1,11 @@
 <script setup>
 import {EventStreamContentType, fetchEventSource} from '@microsoft/fetch-event-source'
-import {computed } from 'vue';
+import {computed} from 'vue';
 import ChatGPTLogo from '@/assets/gpt.svg'
+
 const user = useUser()
-const { isMobile } = useDevice();
-const { $i18n, $settings } = useNuxtApp()
+const {isMobile} = useDevice();
+const {$i18n, $settings} = useNuxtApp()
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 const currentModel = useCurrentModel()
@@ -22,11 +23,11 @@ const userName = getUserNameShort()
 const colorMode = useColorMode()
 
 const props = defineProps({
-  conversation: { type: Object, required: true },
-  openMaskStore: { type: Function, required: true },
-  conversationPanel: { type: Boolean, required: true },
-  maskTitle: { type: Array, required: true },
-  showButtonGroup: { type: Array, required: true }
+  conversation: {type: Object, required: true},
+  openMaskStore: {type: Function, required: true},
+  conversationPanel: {type: Boolean, required: true},
+  maskTitle: {type: Array, required: true},
+  showButtonGroup: {type: Array, required: true}
 })
 const emit = defineEmits([
   'updateAvatar', 'resetTitle'
@@ -102,8 +103,7 @@ const fetchReply = async (message) => {
         }
         if (response.status == 403) {
           throw new Error(`${$i18n.t("There is no available API key.")} HTTP ${response.status} - ${response.statusText}`)
-        }
-        else {
+        } else {
           throw new Error(`Failed to send message. HTTP ${response.status} - ${response.statusText}`);
         }
       },
@@ -154,12 +154,20 @@ const fetchReply = async (message) => {
   }
 }
 
-const scrollChatWindow = (behavior='smooth') => {
+const scrollChatWindow = (behavior = 'smooth') => {
   if (grab.value === null) {
     return;
   }
   grab.value.scrollIntoView({behavior: behavior})
 }
+watch(() => props.conversation.loadingMessages, (newValue, oldValue) => {
+  // 当 loadingMessages 从 true 变为 false 时，执行滚动操作
+  if (oldValue === true && newValue === false) {
+    setTimeout(() => {
+      scrollChatWindow('instant');
+    }, 0);
+  }
+}, {immediate: true});
 
 const send = (message) => {
   fetchingResponse.value = true
@@ -197,7 +205,7 @@ const deleteLastMessage = async (number) => {
     // 数据库和前端删除最后一条 assistant 消息
     const messageAIIndex = props.conversation.messages.length - 1
     const messageAI = props.conversation.messages[messageAIIndex]
-    const { data, error } = await useAuthFetch(`/api/chat/messages/${messageAI.id}/`, {
+    const {data, error} = await useAuthFetch(`/api/chat/messages/${messageAI.id}/`, {
       method: 'DELETE'
     })
     if (!error.value) {
@@ -260,26 +268,26 @@ const bgColor = computed(() => {
           color="primary"
       ></v-progress-circular>
     </div>
-    <div v-else-if="conversation.messages.length > 0" 
-      class="d-flex flex-column justify-space-between main-content"
-      style="width: 100%;"
+    <div v-else-if="conversation.messages.length > 0"
+         class="d-flex flex-column justify-space-between main-content"
+         style="width: 100%;"
     >
       <div class="d-flex flex-column flex-grow-1 ml-4 mr-4">
         <div
-          v-for="(message, index) in conversation.messages" :key="index"
-          class="d-flex align-start"
-          :class="message.is_bot ? 'justify-start' : 'justify-end'"
+            v-for="(message, index) in conversation.messages" :key="index"
+            class="d-flex align-start"
+            :class="message.is_bot ? 'justify-start' : 'justify-end'"
         >
           <div v-if="message.is_bot && !isMobile" class="avatar-bot" :style="{ backgroundColor: bgColor }">
             <img :src="ChatGPTLogo" alt="ChatGPT">
           </div>
           <MsgContent
-            :message="message"
-            :message-index="index"
-            :use-prompt="usePrompt"
-            :retry-message="retryMessage"
-            :delete-message="deleteMessage"
-            :style="`max-width: ${isMobile ? '95%' : '75%'};`"
+              :message="message"
+              :message-index="index"
+              :use-prompt="usePrompt"
+              :retry-message="retryMessage"
+              :delete-message="deleteMessage"
+              :style="`max-width: ${isMobile ? '95%' : '75%'};`"
           />
           <div v-if="!message.is_bot && !isMobile" class="avatar-user">
             <div class="avatar-text">{{ userName }}</div>
@@ -288,15 +296,15 @@ const bgColor = computed(() => {
       </div>
       <div ref="grab" class="w-100" style="height: 100px;"></div>
     </div>
-    <Welcome v-else-if="!route.params.id && conversation.messages.length === 0" />
+    <Welcome v-else-if="!route.params.id && conversation.messages.length === 0"/>
   </div>
 
-  <v-footer 
-    app 
-    v-if="props.conversationPanel" 
-    class="d-flex justify-center" 
-    :style="`box-shadow: 0 0 20px 5px ${$colorMode.value === 'light' ? '#fff': '#121212'}; padding-top: 0;`"
-    :color="$colorMode.value === 'light' ? 'white' : '#121212'" 
+  <v-footer
+      app
+      v-if="props.conversationPanel"
+      class="d-flex justify-center"
+      :style="`box-shadow: 0 0 20px 5px ${$colorMode.value === 'light' ? '#fff': '#121212'}; padding-top: 0;`"
+      :color="$colorMode.value === 'light' ? 'white' : '#121212'"
   >
     <div class="px-md w-100 d-flex flex-column">
       <v-toolbar
@@ -304,39 +312,40 @@ const bgColor = computed(() => {
           color="transparent"
           :height="isMobile ? '48' : '64'"
       >
-        <ModelParameters v-if="!fetchingResponse" />
-        <Prompt v-show="!fetchingResponse" :use-prompt="usePrompt" />
-        <FewShotMask 
-          v-show="!fetchingResponse" 
-          :mask-title="maskTitle"
-          :few-shot-messages="conversation.mask" 
-          :show-button-group="showButtonGroup"
-          @update-avatar="updateAvatar"
-          @reset-title="resetTitle"
+        <ModelParameters v-if="!fetchingResponse"/>
+        <Prompt v-show="!fetchingResponse" :use-prompt="usePrompt"/>
+        <FewShotMask
+            v-show="!fetchingResponse"
+            :mask-title="maskTitle"
+            :few-shot-messages="conversation.mask"
+            :show-button-group="showButtonGroup"
+            @update-avatar="updateAvatar"
+            @reset-title="resetTitle"
         />
         <v-tooltip location="top" :text="$t('cosplayStore')">
           <template v-slot:activator="{props}">
-            <v-btn v-bind="props" icon @click="openMaskStore" v-show="!fetchingResponse" :title="$t('cosplayStore')" class="toolbar-btn">
-              <v-icon 
-                icon="fa:fa-solid fa-store" 
-                style="padding-bottom: 2px;"
+            <v-btn v-bind="props" icon @click="openMaskStore" v-show="!fetchingResponse" :title="$t('cosplayStore')"
+                   class="toolbar-btn">
+              <v-icon
+                  icon="fa:fa-solid fa-store"
+                  style="padding-bottom: 2px;"
               />
             </v-btn>
           </template>
         </v-tooltip>
         <v-tooltip location="top" :text="$t('retry')">
           <template v-slot:activator="{props}">
-            <v-btn 
-              icon 
-              v-bind="props" 
-              v-show="!fetchingResponse && conversation.messages.length > 0" 
-              :title="$t('retry')"
-              @click="retryMessage" 
-              class="toolbar-btn"
+            <v-btn
+                icon
+                v-bind="props"
+                v-show="!fetchingResponse && conversation.messages.length > 0"
+                :title="$t('retry')"
+                @click="retryMessage"
+                class="toolbar-btn"
             >
-              <v-icon 
-                icon="fa:fa-solid fa-arrows-rotate" 
-                style="padding-bottom: 2px;"
+              <v-icon
+                  icon="fa:fa-solid fa-arrows-rotate"
+                  style="padding-bottom: 2px;"
               />
             </v-btn>
           </template>
@@ -351,36 +360,37 @@ const bgColor = computed(() => {
         ></v-switch>
         <v-spacer></v-spacer>
         <v-btn
-          v-show="fetchingResponse"
-          text
-          prepend-icon="close"
-          title="stop"
-          class="mr-3"
-          variant="outlined"
-          @click="stop"
-        >{{ $i18n.t('stopGenerate') }}</v-btn>
+            v-show="fetchingResponse"
+            text
+            prepend-icon="close"
+            title="stop"
+            class="mr-3"
+            variant="outlined"
+            @click="stop"
+        >{{ $i18n.t('stopGenerate') }}
+        </v-btn>
         <v-spacer></v-spacer>
         <div
             v-if="$settings.open_frugal_mode_control === 'True'"
             class="d-flex align-center"
         >
           <v-switch
-            v-show="!fetchingResponse"
-            v-model="frugalMode"
-            inline
-            hide-details
-            color="primary"
+              v-show="!fetchingResponse"
+              v-model="frugalMode"
+              inline
+              hide-details
+              color="primary"
           ></v-switch>
           <v-dialog
-            transition="dialog-bottom-transition"
-            width="auto"
+              transition="dialog-bottom-transition"
+              width="auto"
           >
             <template v-slot:activator="{ props }">
-              <span 
-                v-show="!fetchingResponse"
-                color="gray"
-                v-bind="props"
-                class="ml-3 span-cursor frugal"
+              <span
+                  v-show="!fetchingResponse"
+                  color="gray"
+                  v-bind="props"
+                  class="ml-3 span-cursor frugal"
               >{{ $i18n.t(isMobile ? 'frugalModeShort' : 'frugalMode') }}</span>
             </template>
             <template v-slot:default="{ isActive }">
@@ -406,7 +416,7 @@ const bgColor = computed(() => {
             class="mr-3"
             @click="stop"
         ></v-btn> -->
-        <MsgEditor ref="editor" :send-message="send" :disabled="fetchingResponse" :loading="fetchingResponse" />
+        <MsgEditor ref="editor" :send-message="send" :disabled="fetchingResponse" :loading="fetchingResponse"/>
       </div>
     </div>
   </v-footer>
@@ -431,21 +441,23 @@ const bgColor = computed(() => {
 
 <style scoped>
 .toolbar-btn {
-    font-size: 0.8rem;
-  }
+  font-size: 0.8rem;
+}
+
 .avatar-bot {
   margin: 22px 10px 0 10px;
   padding: 8px 8px 2px 8px;
   border-radius: 10px;
-  //background-color: rgb(25, 195, 125);
-  transform: scale(0.7);
+//background-color: rgb(25, 195, 125); transform: scale(0.7);
 }
+
 .avatar-user {
   margin: 26px 10px 0 10px;
   border-radius: 10px;
   background-color: rgb(178, 207, 130);
   transform: scale(0.8);
 }
+
 .avatar-text {
   width: 51px;
   height: 51px;
@@ -455,16 +467,20 @@ const bgColor = computed(() => {
   align-items: center;
   font-size: 1.5rem;
 }
+
 .main-content {
   max-width: 1200px;
 }
+
 .apikey-btn {
   opacity: 0.7;
   margin: 0 10px 0 -5px !important;
 }
+
 .apikey {
   position: relative;
 }
+
 .apikey:after {
   font-size: 0.6rem;
   content: attr(data-attr);
@@ -472,9 +488,11 @@ const bgColor = computed(() => {
   top: -10px;
   right: -25px;
 }
+
 .span-cursor:hover {
   cursor: pointer;
 }
+
 @media screen and (min-width: 1201px) {
   .px-md {
     padding: 0;
@@ -482,16 +500,19 @@ const bgColor = computed(() => {
     max-width: 1000px;
   }
 }
+
 @media screen and (max-width: 1200px) {
   .px-md {
     padding: 0;
     margin: 0 0;
   }
 }
+
 @media screen and (max-width: 500px) {
   .toolbar-btn {
     font-size: 0.8rem;
   }
+
   .frugal {
     font-size: 0.9rem;
   }
