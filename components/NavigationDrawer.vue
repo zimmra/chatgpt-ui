@@ -373,9 +373,4 @@ const drawer = useDrawer()
   font-size: 1.5rem;
 }
 
-.font-weight-bold-chinese {
-  font-weight: bold;
-  font-family: "微软雅黑", "Microsoft YaHei", "宋体", "SimSun", sans-serif;
-}
-
 </style>

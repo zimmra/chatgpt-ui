@@ -148,13 +148,13 @@ const resetTitle = () => {
       :density="density"
     ></v-btn>
 
-    <v-toolbar-title :class="pfs.l">
-      {{ maskStore ? $t('cosplayStore') : navTitle }}
-      <div 
-        v-if="maskStore && !isMobile"
-        class="v-subtitle"
-      >{{ $t('masksTotal1') + totalMasks + $t('masksTotal2') }}</div>
-    </v-toolbar-title>
+  <v-toolbar-title :class="pfs.l">
+    <span class="font-weight-bold-chinese">{{ maskStore ? $t('cosplayStore') : navTitle }}</span>
+    <div
+      v-if="maskStore && !isMobile"
+      class="v-subtitle"
+    >{{ $t('masksTotal1') + totalMasks + $t('masksTotal2') }}</div>
+  </v-toolbar-title>
 
 
     <!-- appBar buttons -->

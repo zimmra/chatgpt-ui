@@ -76,3 +76,7 @@
         max-height: 150px;
     }
 }
+.font-weight-bold-chinese {
+  font-weight: bold;
+  font-family: "微软雅黑", "Microsoft YaHei", "宋体", "SimSun", sans-serif;
+}
