@@ -113,6 +113,9 @@ const navTitle = computed(() => {
   return runtimeConfig.public.appName+$i18n.t('welcomeScreen.introduction1')
 })
 
+watch(navTitle, (newTitle) => {
+    document.title = newTitle
+  })
 onActivated(async () => {
   if (route.path === '/' && route.query.new !== undefined) {
     createNewConversation()
