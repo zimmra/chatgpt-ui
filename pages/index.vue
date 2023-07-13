@@ -6,8 +6,8 @@ definePageMeta({
   keepalive: true
 })
 
-const { $i18n } = useNuxtApp()
-const { isMobile } = useDevice();
+const {$i18n} = useNuxtApp()
+const {isMobile} = useDevice();
 const runtimeConfig = useRuntimeConfig()
 const drawer = useDrawer()
 const route = useRoute()
@@ -22,14 +22,14 @@ const density = isMobile ? 'compact' : 'default'
 
 const pfs = (() => {
   if (isMobile) {
-        return { 
-          l: 'phone-large-font',
-          n: 'phone-font', 
-          s: 'phone-small-font', 
-          t: 'phone-tiny-font',
-        }
+    return {
+      l: 'phone-large-font',
+      n: 'phone-font',
+      s: 'phone-small-font',
+      t: 'phone-tiny-font',
     }
-    return { l: '', n: '', s: '', t: '' }
+  }
+  return {l: '', n: '', s: '', t: ''}
 })()
 
 
@@ -46,7 +46,7 @@ const closeMaskStore = () => {
 }
 
 const loadConversation = async () => {
-  const { data, error } = await useAuthFetch('/api/chat/conversations/' + route.params.id)
+  const {data, error} = await useAuthFetch('/api/chat/conversations/' + route.params.id)
   if (!error.value) {
     if (data.value.mask === '') {
       data.value.mask = []
@@ -64,7 +64,7 @@ const loadConversation = async () => {
 }
 
 const loadMessage = async () => {
-  const { data, error } = await useAuthFetch('/api/chat/messages/?conversationId=' + route.params.id)
+  const {data, error} = await useAuthFetch('/api/chat/messages/?conversationId=' + route.params.id)
   if (!error.value) {
     conversation.value.id = route.params.id
     conversation.value.messages = data.value
@@ -86,7 +86,7 @@ const createNewConversation = () => {
 const useMask = (data) => {
   maskTitle.value[0] = data.title
   maskTitle.value[1] = data.avatar
-  for (var i = 0; i < data.mask.length; i ++) {
+  for (var i = 0; i < data.mask.length; i++) {
     showButtonGroup.value.push(true)
   }
   conversation.value.mask = data.mask
@@ -106,16 +106,26 @@ onMounted(async () => {
   }
 })
 
+
 const navTitle = computed(() => {
   if (conversation.value && conversation.value.topic !== null) {
     return conversation.value.topic === '' ? $i18n.t('defaultConversationTitle') : conversation.value.topic
   }
-  return runtimeConfig.public.appName+$i18n.t('welcomeScreen.introduction1')
+  return runtimeConfig.public.appName + $i18n.t('welcomeScreen.introduction1')
 })
 
 watch(navTitle, (newTitle) => {
-    document.title = newTitle
-  })
+  document.title = newTitle
+}, {deep: true});
+
+watch(() => route.params, (params) => {
+  const id = params.id;
+  if (id) {
+    document.title = navTitle.value
+    // console.log('document title:', document.title)
+  }
+}, {deep: true});
+
 onActivated(async () => {
   if (route.path === '/' && route.query.new !== undefined) {
     createNewConversation()
@@ -136,47 +146,48 @@ const resetTitle = () => {
 
 <template>
   <v-app-bar :density="density">
-    <v-app-bar-nav-icon 
-      v-if="appBar" 
-      @click="drawer = !drawer"
-      :density="density"
+    <v-app-bar-nav-icon
+        v-if="appBar"
+        @click="drawer = !drawer"
+        :density="density"
     >
     </v-app-bar-nav-icon>
 
-    <v-btn 
-      v-if="maskStore"
-      icon="fa:fa-solid fa-arrow-left"
-      @click="closeMaskStore()"
-      class="toolbar-btn"
-      :density="density"
+    <v-btn
+        v-if="maskStore"
+        icon="fa:fa-solid fa-arrow-left"
+        @click="closeMaskStore()"
+        class="toolbar-btn"
+        :density="density"
     ></v-btn>
 
-  <v-toolbar-title :class="pfs.l">
-    <span class="font-weight-bold-chinese">{{ maskStore ? $t('cosplayStore') : navTitle }}</span>
-    <div
-      v-if="maskStore && !isMobile"
-      class="v-subtitle"
-    >{{ $t('masksTotal1') + totalMasks + $t('masksTotal2') }}</div>
-  </v-toolbar-title>
+    <v-toolbar-title :class="pfs.l">
+      <span class="font-weight-bold-chinese">{{ maskStore ? $t('cosplayStore') : navTitle }}</span>
+      <div
+          v-if="maskStore && !isMobile"
+          class="v-subtitle"
+      >{{ $t('masksTotal1') + totalMasks + $t('masksTotal2') }}
+      </div>
+    </v-toolbar-title>
 
 
     <!-- appBar buttons -->
-    <ShareDialog 
-      :app-bar="appBar" 
-      :conversation="conversation"
+    <ShareDialog
+        :app-bar="appBar"
+        :conversation="conversation"
     />
     <v-btn
-      v-if="appBar"  
-      :title="$t('newConversation')"
-      icon="add"
-      @click="createNewConversation"
-      class="d-md-none"
+        v-if="appBar"
+        :title="$t('newConversation')"
+        icon="add"
+        @click="createNewConversation"
+        class="d-md-none"
     ></v-btn>
     <v-btn
-      v-if="appBar"
-      variant="outlined"
-      class="text-none d-none d-md-block"
-      @click="createNewConversation"
+        v-if="appBar"
+        variant="outlined"
+        class="text-none d-none d-md-block"
+        @click="createNewConversation"
     >
       {{ $t('newConversation') }}
     </v-btn>
@@ -184,19 +195,19 @@ const resetTitle = () => {
   </v-app-bar>
 
   <v-main class="d-flex">
-    <MaskStore 
-      v-if="maskStore"
-      @use-mask="useMask"
-      @update-mask-number="updateMaskNumber"
+    <MaskStore
+        v-if="maskStore"
+        @use-mask="useMask"
+        @update-mask-number="updateMaskNumber"
     />
-    <Conversation 
-      :conversation="conversation"
-      :open-mask-store="openMaskStore" 
-      :conversation-panel="conversationPanel"
-      :mask-title="maskTitle"
-      :show-button-group="showButtonGroup"
-      @update-avatar="updateAvatar"
-      @reset-title="resetTitle"
+    <Conversation
+        :conversation="conversation"
+        :open-mask-store="openMaskStore"
+        :conversation-panel="conversationPanel"
+        :mask-title="maskTitle"
+        :show-button-group="showButtonGroup"
+        @update-avatar="updateAvatar"
+        @reset-title="resetTitle"
     />
   </v-main>
 </template>
@@ -208,7 +219,8 @@ const resetTitle = () => {
     margin: 0 5px;
   }
 }
-.v-subtitle {  
+
+.v-subtitle {
   font-size: 0.7em;
   font-weight: 400;
   margin-top: -6px;

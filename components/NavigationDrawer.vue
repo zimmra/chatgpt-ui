@@ -15,7 +15,6 @@ const selectedId = ref(null);
 
 const handleClick = (id) => {
   selectedId.value = id;
-  // console.log(selectedId.value);
 }
 const themes = ref([
   {title: $i18n.t('lightMode'), value: 'light'},
