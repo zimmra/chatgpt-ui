@@ -169,7 +169,14 @@ watch(() => props.conversation.loadingMessages, (newValue, oldValue) => {
     }, 0);
   }
 }, {immediate: true});
-
+watch(() => route.params, (params) => {
+  const id = params.id;
+  if (id) {
+    setTimeout(() => {
+      scrollChatWindow('instant');
+    }, 0);
+  }
+}, {deep: true, immediate: true});
 const send = (message) => {
   fetchingResponse.value = true
   if (props.conversation.messages.length === 0) {
