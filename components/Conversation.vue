@@ -161,7 +161,7 @@ const scrollChatWindow = (behavior = 'smooth') => {
   grab.value.scrollIntoView({behavior: behavior})
 }
 watch(() => props.conversation.loadingMessages, (newValue, oldValue) => {
-  console.log(props.conversation.id)
+  // console.log(props.conversation.id)
   // 当 loadingMessages 从 true 变为 false 时，执行滚动操作
   if (oldValue === true && newValue === false) {
     setTimeout(() => {

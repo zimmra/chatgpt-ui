@@ -11,7 +11,12 @@ const drawerPermanent = computed(() => {
   return mdAndUp.value
 })
 const user = useUser()
+const selectedId = ref(null);
 
+const handleClick = (id) => {
+  selectedId.value = id;
+  // console.log(selectedId.value);
+}
 const themes = ref([
   {title: $i18n.t('lightMode'), value: 'light'},
   {title: $i18n.t('darkMode'), value: 'dark'},
@@ -232,7 +237,7 @@ const drawer = useDrawer()
               <v-hover v-if="!editingConversation || editingConversation.id !== conversation.id"
                        v-slot="{ isHovering, props }">
                 <v-list-item rounded="lg" color="primary" :to="conversation.id ? `/${conversation.id}` : '/'"
-                             v-bind="props" class="ml-3">
+                             v-bind="props" class="ml-3" @click="handleClick(conversation.id)">
                   <v-list-item-title class="pl-1">{{
                       (conversation.topic && conversation.topic !== '') ? conversation.topic :
                           $t('defaultConversationTitle')
