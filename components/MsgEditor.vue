@@ -53,7 +53,6 @@ onMounted(async () => {
   window.addEventListener('resize', function (event) {
     setTimeout(adjustTextAreaHeight, 0);
   });
-
 })
 
 watch(message, () => {

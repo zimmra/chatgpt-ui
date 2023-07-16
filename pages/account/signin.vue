@@ -106,7 +106,7 @@ const submit = async () => {
           errorMsg.value = error.value.data.non_field_errors[0]
         }
       } else {
-        errorMsg.value = '出错了，请重试。忘记用户名/密码，请联系fenghaozhe1996@gmail.com。'
+        errorMsg.value = '出错了，请重试。忘记用户名/密码，请联系fenghz@zju.edu.cn。'
       }
     } else {
       setUser(data.value.user)

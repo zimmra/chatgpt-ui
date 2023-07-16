@@ -114,17 +114,12 @@ const navTitle = computed(() => {
   return runtimeConfig.public.appName + $i18n.t('welcomeScreen.introduction1')
 })
 
-watch(navTitle, (newTitle) => {
-  document.title = newTitle
-}, {deep: true});
-
-watch(() => route.params, (params) => {
-  const id = params.id;
-  if (id) {
-    document.title = navTitle.value
-    // console.log('document title:', document.title)
-  }
-}, {deep: true});
+useHead({
+  title: navTitle,
+  meta: [
+    { name: 'description', content: 'ChatMate: Your Dedicated AI Assistant.' },
+  ],
+})
 
 onActivated(async () => {
   if (route.path === '/' && route.query.new !== undefined) {
