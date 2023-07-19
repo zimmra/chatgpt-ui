@@ -1,5 +1,5 @@
 .phone-large-font {
-    font-size: 1.0rem !important;
+    font-size: 1rem !important;
 }
 
 .phone-font {
@@ -77,6 +77,6 @@
     }
 }
 .font-weight-bold-chinese {
-  font-weight: bold;
-  font-family: "微软雅黑", "Microsoft YaHei", "宋体", "SimSun", sans-serif;
+    font-weight: bold;
+    font-family: '微软雅黑', 'Microsoft YaHei', '宋体', 'SimSun', sans-serif;
 }

@@ -6,7 +6,7 @@ import { md3 } from 'vuetify/blueprints'
 import colors from 'vuetify/lib/util/colors'
 // import * as directives from 'vuetify/directives'
 
-export default defineNuxtPlugin(nuxtApp => {
+export default defineNuxtPlugin((nuxtApp) => {
     const vuetify = createVuetify({
         ssr: true,
         blueprint: md3,
@@ -18,7 +18,7 @@ export default defineNuxtPlugin(nuxtApp => {
                 fa
             }
         },
-        components,
+        components
         // config theme
         // theme: {
         //     themes: {
