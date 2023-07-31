@@ -117,6 +117,16 @@ const updateConversation = async (items, index) => {
     editingConversation.value = null
 }
 
+const showConvDeleteDialog = ref(false);
+
+const confirmConvDelete=()=>{
+    showConvDeleteDialog.value=true
+}
+
+const onUpdateIsShow=(newIsShowValue)=> {  
+    showConvDeleteDialog.value = newIsShowValue;  
+}  
+
 const deleteConversation = async (items, index) => {
     deletingConversationIndex.value = index
     const { data, error } = await useAuthFetch(`/api/chat/conversations/${items[index].id}/`, {
@@ -124,6 +134,7 @@ const deleteConversation = async (items, index) => {
     })
     deletingConversationIndex.value = null
     if (!error.value) {
+        loadConversations()
         const deletingConversation = items[index]
         items.splice(index, 1)
         if (route.params.id && parseInt(route.params.id) === deletingConversation.id) {
@@ -309,8 +320,9 @@ const drawer = useDrawer()
                                                 size="small"
                                                 variant="text"
                                                 :loading="deletingConversationIndex === cIdx"
-                                                @click.prevent="deleteConversation(items, cIdx)"
+                                                @click.prevent="confirmConvDelete()"
                                             ></v-btn>
+                                            <ConvDeleteDialog :isShow="showConvDeleteDialog" :items="items" :cIdx="cIdx" @update:isShow="onUpdateIsShow" @on:confirm="deleteConversation"/>
                                         </div>
                                     </template>
                                 </v-list-item>

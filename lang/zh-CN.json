@@ -48,6 +48,8 @@
     "titlePrompt": "名称",
     "addNewPrompt": "添加新的提示词",
     "pressEnterToSendYourMessageOrShiftEnterToAddANewLine": "按回车键发送您的信息，或按Shift+Enter键添加新行",
+    "confirmDeleteConversation": "确定要删除此会话吗?",
+    "confirmDeleteConversationDetails": "这将永久删除会话: ",
     "confirmDeleteAllConversations": "警告⚠️: 确定要删除所有的会话吗?",
     "confirmDeleteAllConversationsDetails": "这将永久删除所有会话, 并且无法恢复!",
     "Cancel": "取消",
