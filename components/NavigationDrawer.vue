@@ -118,9 +118,13 @@ const updateConversation = async (items, index) => {
 }
 
 const showConvDeleteDialog = ref(false);
+const items = ref({});
+const cIdx= ref(0);
 
-const confirmConvDelete=()=>{
+const confirmConvDelete=(itms, index)=>{
     showConvDeleteDialog.value=true
+    items.value = itms
+    cIdx.value = index
 }
 
 const onUpdateIsShow=(newIsShowValue)=> {  
@@ -320,9 +324,8 @@ const drawer = useDrawer()
                                                 size="small"
                                                 variant="text"
                                                 :loading="deletingConversationIndex === cIdx"
-                                                @click.prevent="confirmConvDelete()"
+                                                @click.prevent="confirmConvDelete(items,cIdx)"
                                             ></v-btn>
-                                            <ConvDeleteDialog :isShow="showConvDeleteDialog" :items="items" :cIdx="cIdx" @update:isShow="onUpdateIsShow" @on:confirm="deleteConversation"/>
                                         </div>
                                     </template>
                                 </v-list-item>
@@ -330,6 +333,7 @@ const drawer = useDrawer()
                         </template>
                     </v-list-group>
                 </template>
+                <ConvDeleteDialog :isShow="showConvDeleteDialog" :items="items" :cIdx="cIdx" @update:isShow="onUpdateIsShow" @on:confirm="deleteConversation"/>
             </v-list>
         </div>
 

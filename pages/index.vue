@@ -131,6 +131,13 @@ const updateAvatar = (data) => {
     maskTitle.value[1] = data
 }
 
+const fetchingResponse=ref(false)
+
+const updateFetchingResponse= (data) => {
+    fetchingResponse.value=data
+    
+}
+
 const resetTitle = () => {
     maskTitle.value[0] = $i18n.t('newCosplay')
     maskTitle.value[1] = '😀'
@@ -162,14 +169,14 @@ const resetTitle = () => {
         <!-- appBar buttons -->
         <ShareDialog :app-bar="appBar" :conversation="conversation" />
         <v-btn
-            v-if="appBar"
+            v-if="appBar && !fetchingResponse"
             :title="$t('newConversation')"
             icon="add"
             @click="createNewConversation"
             class="d-md-none"
         ></v-btn>
         <v-btn
-            v-if="appBar"
+            v-if="appBar && !fetchingResponse"
             variant="outlined"
             class="text-none d-none d-md-block"
             @click="createNewConversation"
@@ -188,6 +195,7 @@ const resetTitle = () => {
             :show-button-group="showButtonGroup"
             @update-avatar="updateAvatar"
             @reset-title="resetTitle"
+            @update:fetchingResponse="updateFetchingResponse"
         />
     </v-main>
 </template>
