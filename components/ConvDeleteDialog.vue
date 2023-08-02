@@ -29,7 +29,17 @@ const { isShow, items, cIdx } = toRefs(props)
 
 const localIsShow = ref(isShow.value)
 
-const pageTitle = computed(() => document.title)
+const { $i18n } = useNuxtApp()
+
+const pageTitle = computed(() => {
+    const title = items.value[cIdx.value]?.topic
+
+    if(title){
+        return title
+    }
+
+    return $i18n.t('defaultConversationTitle')
+})
 
 watch(isShow, (newValue) => {
     localIsShow.value = newValue;
