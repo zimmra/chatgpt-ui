@@ -12,8 +12,8 @@
 
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" @click="onConfirm()"> {{ $t('Confirm deletion') }} </v-btn>
-                <v-btn color="primary" @click="onCancel()"> {{ $t('Cancel deletion') }} </v-btn>
+                <v-btn color="primary" class="font-weight-bold-chinese" @click="onConfirm()"> {{ $t('Confirm deletion') }} </v-btn>
+                <v-btn color="primary" class="font-weight-bold-chinese" @click="onCancel()"> {{ $t('Cancel deletion') }} </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

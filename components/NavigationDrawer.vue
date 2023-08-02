@@ -369,7 +369,7 @@ const drawer = useDrawer()
                                             <v-btn
                                                 variant="text"
                                                 @click="clearConversations"
-                                                class="text-none"
+                                                class="font-weight-bold-chinese"
                                                 :loading="deletingConversations"
                                             >
                                                 {{ $i18n.t('Confirm deletion') }}
@@ -377,7 +377,7 @@ const drawer = useDrawer()
                                             <v-btn
                                                 variant="text"
                                                 @click="clearConfirmDialog = false"
-                                                class="text-none"
+                                                class="font-weight-bold-chinese"
                                             >
                                                 {{ $i18n.t('Cancel deletion') }}
                                             </v-btn>
