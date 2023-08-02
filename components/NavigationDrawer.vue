@@ -367,21 +367,19 @@ const drawer = useDrawer()
                                         <v-card-actions>
                                             <v-spacer></v-spacer>
                                             <v-btn
-                                                color="green-darken-1"
-                                                variant="text"
-                                                @click="clearConfirmDialog = false"
-                                                class="text-none"
-                                            >
-                                                {{ $i18n.t('Cancel deletion') }}
-                                            </v-btn>
-                                            <v-btn
-                                                color="green-darken-1"
                                                 variant="text"
                                                 @click="clearConversations"
                                                 class="text-none"
                                                 :loading="deletingConversations"
                                             >
                                                 {{ $i18n.t('Confirm deletion') }}
+                                            </v-btn>
+                                            <v-btn
+                                                variant="text"
+                                                @click="clearConfirmDialog = false"
+                                                class="text-none"
+                                            >
+                                                {{ $i18n.t('Cancel deletion') }}
                                             </v-btn>
                                         </v-card-actions>
                                     </v-card>
