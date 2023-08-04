@@ -29,7 +29,7 @@ const props = defineProps({
     maskTitle: { type: Array, required: true },
     showButtonGroup: { type: Array, required: true }
 })
-const emit = defineEmits(['updateAvatar', 'resetTitle', 'update-fetchingResponse'])
+const emit = defineEmits(['updateAvatar', 'resetTitle', 'update:fetchingResponse'])
 
 const processMessageQueue = () => {
     if (isProcessingQueue || messageQueue.length === 0) {
