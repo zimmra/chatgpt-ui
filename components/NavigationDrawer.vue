@@ -117,19 +117,10 @@ const updateConversation = async (items, index) => {
     editingConversation.value = null
 }
 
-const showConvDeleteDialog = ref(false);
-const items = ref({});
-const cIdx= ref(0);
-
-const confirmConvDelete=(itms, index)=>{
-    showConvDeleteDialog.value=true
-    items.value = itms
-    cIdx.value = index
+const deletingConversation = ref(null)
+const confirmConvDelete=(items, index)=>{
+    deletingConversation.value = items[index]
 }
-
-const onUpdateIsShow=(newIsShowValue)=> {  
-    showConvDeleteDialog.value = newIsShowValue;  
-}  
 
 const deleteConversation = async (items, index) => {
     deletingConversationIndex.value = index
@@ -289,10 +280,47 @@ const drawer = useDrawer()
                                     ></v-btn>
                                 </div>
                             </v-list-item>
+                            <v-list-item
+                                color="primary"
+                                rounded="xl"
+                                v-if="
+                                    deletingConversation &&
+                                    deletingConversation.id === conversation.id
+                                "
+                            >
+                                <div class="d-flex flex-row align-center">
+                                    <v-text-field
+                                        v-model="deletingConversation.topic"
+                                        :loading="deletingConversation.updating"
+                                        variant="solo"
+                                        hide-details
+                                        density="compact"
+                                        autofocus
+                                        @keyup.enter="deleteConversation(items, cIdx)"
+                                        class="flex-grow-1"
+                                    ></v-text-field>
+                                    <v-btn
+                                        icon="done"
+                                        density="compact"
+                                        variant="text"
+                                        @click="deleteConversation(items, cIdx)"
+                                        class="ml-3 mr-3"
+                                    ></v-btn>
+                                    <v-btn
+                                        icon="close"
+                                        density="compact"
+                                        variant="text"
+                                        @click="deletingConversation = null"
+                                        class="mr-2"
+                                    ></v-btn>
+                                </div>
+                            </v-list-item>
                             <v-hover
                                 v-if="
-                                    !editingConversation ||
-                                    editingConversation.id !== conversation.id
+                                    (!editingConversation ||
+                                    editingConversation.id !== conversation.id)&&
+                                    (!deletingConversation ||
+                                    deletingConversation.id !== conversation.id)
                                 "
                                 v-slot="{ isHovering, props }"
                             >
@@ -333,7 +361,6 @@ const drawer = useDrawer()
                         </template>
                     </v-list-group>
                 </template>
-                <ConvDeleteDialog :isShow="showConvDeleteDialog" :items="items" :cIdx="cIdx" @update:isShow="onUpdateIsShow" @on:confirm="deleteConversation"/>
             </v-list>
         </div>
 
