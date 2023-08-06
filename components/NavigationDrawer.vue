@@ -289,16 +289,6 @@ const drawer = useDrawer()
                                 "
                             >
                                 <div class="d-flex flex-row align-center">
-                                    <v-text-field
-                                        v-model="deletingConversation.topic"
-                                        :loading="deletingConversation.updating"
-                                        variant="solo"
-                                        hide-details
-                                        density="compact"
-                                        autofocus
-                                        @keyup.enter="deleteConversation(items, cIdx)"
-                                        class="flex-grow-1"
-                                    ></v-text-field>
                                     <v-btn
                                         icon="done"
                                         density="compact"
