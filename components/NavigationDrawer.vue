@@ -257,7 +257,6 @@ const drawer = useDrawer()
                   <v-text-field
                       v-model="editingConversation.topic"
                       :loading="editingConversation.updating"
-                      variant="solo"
                       hide-details
                       density="compact"
                       autofocus
@@ -288,14 +287,7 @@ const drawer = useDrawer()
                                     deletingConversation.id === conversation.id
                                 "
               >
-                <div class="d-flex flex-row align-center">
-                  <v-text-field
-                      :value="deletingConversation.topic"
-                      hide-details
-                      density="compact"
-                      readonly
-                      class="flex-grow-1"
-                  ></v-text-field>
+                <div class="d-flex justify-center align-center">
                   <v-btn
                       icon="done"
                       density="compact"
