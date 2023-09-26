@@ -112,7 +112,8 @@ const fetchReply = async (message) => {
                 }
                 if (response.status == 403) {
                     throw new Error(
-                        `${$i18n.t('There is no available API key.')} HTTP ${response.status} - ${response.statusText
+                        `${$i18n.t('There is no available API key.')} HTTP ${response.status} - ${
+                            response.statusText
                         }`
                     )
                 } else {
@@ -162,7 +163,9 @@ const fetchReply = async (message) => {
                 messageQueue.push(data.content)
                 processMessageQueue()
 
-                scrollChatWindow()
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+                    scrollChatWindow()
+                }
             }
         })
     } catch (err) {
@@ -170,6 +173,18 @@ const fetchReply = async (message) => {
         abortFetch()
         showSnackbar(err.message)
     }
+}
+
+const needScroll = () => {
+    const grabElement = grab.value
+    if (grabElement === null) {
+        return false
+    }
+    const grabElementRect = grabElement.getBoundingClientRect()
+    return !(
+        grabElementRect.top >= 0 &&
+        grabElementRect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+    )
 }
 
 const scrollChatWindow = (behavior = 'smooth') => {
@@ -185,7 +200,7 @@ watch(
         // 当 loadingMessages 从 true 变为 false 时，执行滚动操作
         if (oldValue === true && newValue === false) {
             setTimeout(() => {
-                scrollChatWindow('instant')
+                scrollChatWindow()
             }, 0)
         }
     },
@@ -213,7 +228,7 @@ const send = (message) => {
     props.conversation.messages.push({ message: message })
     const now = new Date().toISOString()
     Object.assign(props.conversation, { created_at: now, updated_at: now })
-    scrollChatWindow('instant')
+    scrollChatWindow()
     fetchReply(message)
     scrollChatWindow()
 }
@@ -304,21 +319,41 @@ const bgColor = computed(() => {
 </script>
 
 <template>
-    <div v-if="props.conversationPanel && conversation" style="width: 100%" class="d-flex justify-center">
+    <div
+        v-if="props.conversationPanel && conversation"
+        style="width: 100%"
+        class="d-flex justify-center"
+    >
         <div v-if="conversation.loadingMessages" class="text-center">
             <v-progress-circular indeterminate color="primary"></v-progress-circular>
         </div>
-        <div v-else-if="conversation.messages.length > 0" class="d-flex flex-column justify-space-between main-content"
-            style="width: 100%">
+        <div
+            v-else-if="conversation.messages.length > 0"
+            class="d-flex flex-column justify-space-between main-content"
+            style="width: 100%"
+        >
             <div class="d-flex flex-column flex-grow-1 ml-4 mr-4">
-                <div v-for="(message, index) in conversation.messages" :key="index" class="d-flex align-start"
-                    :class="message.is_bot ? 'justify-start' : 'justify-end'">
-                    <div v-if="message.is_bot && !isMobile" class="avatar-bot" :style="{ backgroundColor: bgColor }">
+                <div
+                    v-for="(message, index) in conversation.messages"
+                    :key="index"
+                    class="d-flex align-start"
+                    :class="message.is_bot ? 'justify-start' : 'justify-end'"
+                >
+                    <div
+                        v-if="message.is_bot && !isMobile"
+                        class="avatar-bot"
+                        :style="{ backgroundColor: bgColor }"
+                    >
                         <img :src="ChatGPTLogo" alt="ChatGPT" />
                     </div>
-                    <MsgContent :message="message" :message-index="index" :use-prompt="usePrompt"
-                        :retry-message="retryMessage" :delete-message="deleteMessage"
-                        :style="`max-width: ${isMobile ? '95%' : '75%'};`" />
+                    <MsgContent
+                        :message="message"
+                        :message-index="index"
+                        :use-prompt="usePrompt"
+                        :retry-message="retryMessage"
+                        :delete-message="deleteMessage"
+                        :style="`max-width: ${isMobile ? '95%' : '75%'};`"
+                    />
                     <div v-if="!message.is_bot && !isMobile" class="avatar-user">
                         <div class="avatar-text">{{ userName }}</div>
                     </div>
@@ -329,44 +364,98 @@ const bgColor = computed(() => {
         <Welcome v-else-if="!route.params.id && conversation.messages.length === 0" />
     </div>
 
-    <v-footer app v-if="props.conversationPanel" class="d-flex justify-center" :style="`box-shadow: 0 0 20px 5px ${$colorMode.value === 'light' ? '#fff' : '#121212'
-        }; padding-top: 0;`" :color="$colorMode.value === 'light' ? 'white' : '#121212'">
+    <v-footer
+        app
+        v-if="props.conversationPanel"
+        class="d-flex justify-center"
+        :style="`box-shadow: 0 0 20px 5px ${
+            $colorMode.value === 'light' ? '#fff' : '#121212'
+        }; padding-top: 0;`"
+        :color="$colorMode.value === 'light' ? 'white' : '#121212'"
+    >
         <div class="px-md w-100 d-flex flex-column">
             <v-toolbar density="comfortable" color="transparent" :height="isMobile ? '48' : '64'">
                 <ModelParameters v-if="!fetchingResponse" />
                 <Prompt v-show="!fetchingResponse" :use-prompt="usePrompt" />
-                <FewShotMask v-show="!fetchingResponse" :mask-title="maskTitle" :few-shot-messages="conversation.mask"
-                    :show-button-group="showButtonGroup" @update-avatar="updateAvatar" @reset-title="resetTitle" />
+                <FewShotMask
+                    v-show="!fetchingResponse"
+                    :mask-title="maskTitle"
+                    :few-shot-messages="conversation.mask"
+                    :show-button-group="showButtonGroup"
+                    @update-avatar="updateAvatar"
+                    @reset-title="resetTitle"
+                />
                 <v-tooltip location="top" :text="$t('cosplayStore')">
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props" icon @click="openMaskStore" v-show="!fetchingResponse"
-                            :title="$t('cosplayStore')" class="toolbar-btn">
+                        <v-btn
+                            v-bind="props"
+                            icon
+                            @click="openMaskStore"
+                            v-show="!fetchingResponse"
+                            :title="$t('cosplayStore')"
+                            class="toolbar-btn"
+                        >
                             <v-icon icon="fa:fa-solid fa-store" style="padding-bottom: 2px" />
                         </v-btn>
                     </template>
                 </v-tooltip>
                 <v-tooltip location="top" :text="$t('retry')">
                     <template v-slot:activator="{ props }">
-                        <v-btn icon v-bind="props" v-show="!fetchingResponse && conversation.messages.length > 0"
-                            :title="$t('retry')" @click="retryMessage" class="toolbar-btn">
-                            <v-icon icon="fa:fa-solid fa-arrows-rotate" style="padding-bottom: 2px" />
+                        <v-btn
+                            icon
+                            v-bind="props"
+                            v-show="!fetchingResponse && conversation.messages.length > 0"
+                            :title="$t('retry')"
+                            @click="retryMessage"
+                            class="toolbar-btn"
+                        >
+                            <v-icon
+                                icon="fa:fa-solid fa-arrows-rotate"
+                                style="padding-bottom: 2px"
+                            />
                         </v-btn>
                     </template>
                 </v-tooltip>
-                <v-switch v-if="$settings.open_web_search === 'True'" v-model="enableWebSearch" inline hide-details
-                    color="primary" :label="$t('webSearch')"></v-switch>
+                <v-switch
+                    v-if="$settings.open_web_search === 'True'"
+                    v-model="enableWebSearch"
+                    inline
+                    hide-details
+                    color="primary"
+                    :label="$t('webSearch')"
+                ></v-switch>
                 <v-spacer></v-spacer>
-                <v-btn v-show="fetchingResponse" text prepend-icon="close" title="stop" class="mr-3" variant="outlined"
-                    @click="stop">{{ $i18n.t('stopGenerate') }}
+                <v-btn
+                    v-show="fetchingResponse"
+                    text
+                    prepend-icon="close"
+                    title="stop"
+                    class="mr-3"
+                    variant="outlined"
+                    @click="stop"
+                    >{{ $i18n.t('stopGenerate') }}
                 </v-btn>
                 <v-spacer></v-spacer>
-                <div v-if="$settings.open_frugal_mode_control === 'True'" class="d-flex align-center">
-                    <v-switch v-show="!fetchingResponse" v-model="frugalMode" inline hide-details
-                        color="primary"></v-switch>
+                <div
+                    v-if="$settings.open_frugal_mode_control === 'True'"
+                    class="d-flex align-center"
+                >
+                    <v-switch
+                        v-show="!fetchingResponse"
+                        v-model="frugalMode"
+                        inline
+                        hide-details
+                        color="primary"
+                    ></v-switch>
                     <v-dialog transition="dialog-bottom-transition" width="auto">
                         <template v-slot:activator="{ props }">
-                            <span v-show="!fetchingResponse" color="gray" v-bind="props" class="ml-3 span-cursor frugal">{{
-                                $i18n.t(isMobile ? 'frugalModeShort' : 'frugalMode') }}</span>
+                            <span
+                                v-show="!fetchingResponse"
+                                color="gray"
+                                v-bind="props"
+                                class="ml-3 span-cursor frugal"
+                                >{{ $i18n.t(isMobile ? 'frugalModeShort' : 'frugalMode') }}</span
+                            >
                         </template>
                         <template v-slot:default="{ isActive }">
                             <v-card>
@@ -387,7 +476,14 @@ const bgColor = computed(() => {
             class="mr-3"
             @click="stop"
         ></v-btn> -->
-                <MsgEditor ref="editor" :send-message="send" :disabled="fetchingResponse" :loading="fetchingResponse" />
+                <MsgEditor
+                    ref="editor"
+                    :send-message="send"
+                    :disabled="fetchingResponse"
+                    :loading="fetchingResponse"
+                    :scroll-down="scrollChatWindow"
+                    :need-scroll="needScroll"
+                />
             </div>
         </div>
     </v-footer>

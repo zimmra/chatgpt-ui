@@ -3,6 +3,8 @@ const { isMobile } = useDevice()
 
 const { $i18n } = useNuxtApp()
 
+const colorMode = useColorMode()
+
 const props = defineProps({
     sendMessage: {
         type: Function,
@@ -15,6 +17,14 @@ const props = defineProps({
     loading: {
         type: Boolean,
         default: false
+    },
+    scrollDown: {
+        type: Function,
+        required: true
+    },
+    needScroll: {
+        type: Function,
+        required: true
     }
 })
 
@@ -27,6 +37,7 @@ const hint = computed(() => {
     return isMobile ? '' : $i18n.t('pressEnterToSendYourMessageOrShiftEnterToAddANewLine')
 })
 const watchflag = ref(true)
+const shouldShow = ref(false)
 
 onMounted(async () => {
     // 获取文本框的 DOM 元素
@@ -52,6 +63,9 @@ onMounted(async () => {
     window.addEventListener('resize', function (event) {
         setTimeout(adjustTextAreaHeight, 0)
     })
+    window.addEventListener('scroll', () => {
+        shouldShow.value = props.needScroll()
+    });
 })
 
 watch(message, () => {
@@ -112,6 +126,10 @@ const clickSendBtn = () => {
     send()
 }
 
+const clickScrollBtn = () => {
+    props.scrollDown()
+}
+
 const enterOnly = (event) => {
     event.preventDefault()
     if (!isMobile) {
@@ -162,6 +180,13 @@ defineExpose({
                 @keydown.enter.exact="enterOnly"
                 @click:append-inner="clickSendBtn"
             ></v-textarea>
+            <v-icon v-show="shouldShow" 
+                icon="arrow_circle_down" 
+                class="scroll-down-icon" 
+                @click="clickScrollBtn"
+                :color="$colorMode.value === 'light' ? 'black' : 'white'"
+                >
+            </v-icon>
             <div class="text-under-textarea">
                 <span
                     >Free Research Preview. Powered by OpenAI. Sponsored by the
@@ -181,6 +206,13 @@ defineExpose({
     align-items: stretch;
     flex-direction: column;
     width: 100%;
+}
+
+.scroll-down-icon {
+    position: absolute;
+    right: 60px;
+    bottom: 55px;
+    color: #38235b;
 }
 
 .text-under-textarea {

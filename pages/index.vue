@@ -131,11 +131,10 @@ const updateAvatar = (data) => {
     maskTitle.value[1] = data
 }
 
-const fetchingResponse=ref(false)
+const fetchingResponse = ref(false)
 
-const updateFetchingResponse= (data) => {
-    fetchingResponse.value=data
-    
+const updateFetchingResponse = (data) => {
+    fetchingResponse.value = data
 }
 
 const resetTitle = () => {

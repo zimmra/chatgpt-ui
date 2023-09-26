@@ -43,7 +43,8 @@ const addMessage = () => {
     }
     if (props.fewShotMessages.length === 0) {
         fewShotMessage.role = 'system'
-        fewShotMessage.content = 'You are ChatGPT, a large language model trained by OpenAI. Follow the user\'s instructions carefully. Style your responses in Markdown.'
+        fewShotMessage.content =
+            "You are ChatGPT, a large language model trained by OpenAI. Follow the user's instructions carefully. Style your responses in Markdown."
         // showTitle.value = true
     } else if (props.fewShotMessages.length % 2 === 0) {
         fewShotMessage.role = 'assistant'
