@@ -50,8 +50,8 @@ export const MODELS = {
     temperature: 0.7,
     top_p: 1.0
   },
-  'gpt-3.5-1106-preview': {
-    name: 'gpt-4-1106-preview',
+  'gpt-3.5-turbo-1106': {
+    name: 'gpt-3.5-turbo-1106',
     frequency_penalty: 0.0,
     presence_penalty: 0.0,
     total_tokens: 16384,
