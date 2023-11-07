@@ -40,6 +40,24 @@ export const MODELS = {
     max_tokens: 2000,
     temperature: 0.7,
     top_p: 1.0
+  },
+  'gpt-4-1106-preview': {
+    name: 'gpt-4-1106-preview',
+    frequency_penalty: 0.0,
+    presence_penalty: 0.0,
+    total_tokens: 128000,
+    max_tokens: 32000,
+    temperature: 0.7,
+    top_p: 1.0
+  },
+  'gpt-3.5-1106-preview': {
+    name: 'gpt-4-1106-preview',
+    frequency_penalty: 0.0,
+    presence_penalty: 0.0,
+    total_tokens: 16384,
+    max_tokens: 4000,
+    temperature: 0.7,
+    top_p: 1.0
   }
 }
 
