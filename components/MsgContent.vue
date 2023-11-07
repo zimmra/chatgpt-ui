@@ -2,6 +2,7 @@
 import hljs from "highlight.js"
 import MarkdownIt from 'markdown-it'
 import copy from 'copy-to-clipboard'
+import mathjax3 from 'markdown-it-mathjax3'
 
 
 const md = new MarkdownIt({
@@ -11,10 +12,23 @@ const md = new MarkdownIt({
     return `<pre class="hljs-code-container my-3"><div class="hljs-code-header d-flex align-center justify-space-between bg-grey-darken-3 pa-1"><span class="pl-2 text-caption">${language}</span><button class="hljs-copy-button" data-copied="false">Copy</button></div><code class="hljs language-${language}">${hljs.highlight(code, { language: language, ignoreIllegals: true }).value}</code></pre>`
   },
 })
+md.use(mathjax3)
 
 const props = defineProps({
   message: {
     type: Object,
+    required: true
+  },
+  index: {
+    type: Number,
+    required: true,
+  },
+  usePrompt: {
+    type: Function,
+    required: true
+  },
+  deleteMessage: {
+    type: Function,
     required: true
   }
 })
@@ -61,16 +75,45 @@ onMounted(() => {
       :color="message.is_bot ? '' : 'primary'"
       rounded="lg"
       elevation="2"
+      :class="{card_disabled: message.is_disabled}"
   >
     <div
         ref="contentElm"
         v-html="contentHtml"
         class="chat-msg-content pa-3"
     ></div>
+    <v-divider :color='message.is_bot? "rgb(var(--v-theme-on-background))" : "rgb(var(--v-theme-on-primary))"'></v-divider>
   </v-card>
 </template>
 
 <style>
+.chat-msg-content {
+  font-size: 0.875rem !important;
+  font-weight: 400;
+  line-height: 1.25rem;
+}
+.chat-msg-content p,
+.chat-msg-content table,
+.chat-msg-content ul,
+.chat-msg-content ol,
+.chat-msg-content h1,
+.chat-msg-content h2,
+.chat-msg-content h3,
+.chat-msg-content h4,
+.chat-msg-content h5,
+.chat-msg-content h6 {
+  margin-bottom: 1rem;
+}
+.chat-msg-content table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: .5rem;
+}
+.chat-msg-content table th,
+.chat-msg-content table td {
+  padding: .5rem 1rem;
+  border: 1px solid gray;
+}
 .chat-msg-content ol, .chat-msg-content ul {
   padding-left: 2em;
 }
@@ -89,4 +132,13 @@ onMounted(() => {
 .hljs-copy-button:active{border-color:#ffffff66}
 .hljs-copy-button[data-copied="true"]{text-indent:0;width:auto;background-image:none}
 @media(prefers-reduced-motion){.hljs-copy-button{transition:none}}
+
+/*MathJax*/
+.MathJax svg {
+  max-width: 100%;
+  overflow: auto;
+}
+.card_disabled {
+  opacity: 0.5;
+}
 </style>

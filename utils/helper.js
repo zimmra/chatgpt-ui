@@ -24,12 +24,14 @@ export const addConversation = (conversation) => {
 
 
 export const genTitle = async (conversationId) => {
-    const { $i18n } = useNuxtApp()
+    const { $i18n, $settings } = useNuxtApp()
+    const openaiApiKey = useApiKey()
     const { data, error } = await useAuthFetch('/api/gen_title/', {
         method: 'POST',
         body: {
             conversationId: conversationId,
-            prompt: $i18n.t('genTitlePrompt')
+            prompt: $i18n.t('genTitlePrompt'),
+            openaiApiKey: $settings.open_api_key_setting === 'True' ? openaiApiKey.value : null,
         }
     })
     if (!error.value) {
@@ -42,25 +44,6 @@ export const genTitle = async (conversationId) => {
         return data.value.title
     }
     return null
-}
-
-const transformData = (list) => {
-    const result = {};
-    for (let i = 0; i < list.length; i++) {
-        const item = list[i];
-        result[item.name] = item.value;
-    }
-    return result;
-}
-
-export const fetchSystemSettings = async () => {
-    const { data, error } = await useAuthFetch('/api/chat/settings/', {
-        method: 'GET',
-    })
-    if (!error.value) {
-        const settings = useSettings()
-        settings.value = transformData(data.value)
-    }
 }
 
 export const fetchUser = async () => {

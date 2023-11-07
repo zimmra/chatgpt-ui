@@ -3,7 +3,7 @@ const appName = process.env.NUXT_PUBLIC_APP_NAME || "PZ's ChatGPT UI"
 
 export default defineNuxtConfig({
     debug: process.env.NODE_ENV !== 'production',
-    ssr: true,
+    ssr: process.env.SSR !== 'false',
     app: {
         head: {
             title: appName,
@@ -60,11 +60,23 @@ export default defineNuxtConfig({
                 iso: 'ru-RU',
                 name: 'Русский',
                 file: 'ru-RU.json',
+            },
+            {
+                code: 'fr',
+                iso: 'fr-FR',
+                name: 'Français',
+                file: 'fr-FR.json',
+            },
+            {
+                code: 'es',
+                iso: 'es-ES',
+                name: 'Español',
+                file: 'es-ES.json',
             }
         ],
         lazy: true,
         langDir: 'lang',
-        defaultLocale: 'en',
+        defaultLocale: process.env.DEFAULT_LOCALE || 'en',
         vueI18n: {
             fallbackLocale: 'en',
         },
